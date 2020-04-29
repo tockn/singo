@@ -17,40 +17,47 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-type RequestType string
+type ReceiveMessageType string
 
 var (
-	RequestTypeOffer  RequestType = "offer"
-	RequestTypeAnswer RequestType = "answer"
+	ReceiveMessageTypeJoinRoom ReceiveMessageType = "join room"
+	ReceiveMessageTypeOffer    ReceiveMessageType = "offer"
+	ReceiveMessageTypeAnswer   ReceiveMessageType = "answer"
 )
 
-type RequestMessage struct {
-	Type    RequestType     `json:"type"`
+type ReceiveMessage struct {
+	Type    ReceiveMessageType `json:"type"`
+	Payload json.RawMessage    `json:"payload"`
+}
+
+type SendMessageType string
+
+var (
+	SendMessageTypeError  SendMessageType = "error"
+	SendMessageTypeOffer  SendMessageType = "offer"
+	SendMessageTypeAnswer SendMessageType = "answer"
+)
+
+type ErrorMessage string
+
+func (e ErrorMessage) Error() string {
+	return string(e)
+}
+
+var (
+	ErrMsgInvalidType    ErrorMessage = "invalid type"
+	ErrMsgInvalidPayload ErrorMessage = "invalid payload"
+	ErrMsgInternalError  ErrorMessage = "internal error"
+)
+
+type SendMessage struct {
+	Type    SendMessageType `json:"type"`
 	Payload json.RawMessage `json:"payload"`
 }
 
-type ResponseType string
-
-var (
-	ResponseTypeError  ResponseType = "error"
-	ResponseTypeOffer  ResponseType = "offer"
-	ResponseTypeAnswer ResponseType = "answer"
-)
-
-var (
-	ErrMsgInvalidRequestType    = "invalid request type"
-	ErrMsgInvalidRequestPayload = "invalid request payload"
-	ErrMsgInternalError         = "internal error"
-)
-
-type ResponseMessage struct {
-	Type    ResponseType    `json:"type"`
-	Payload json.RawMessage `json:"payload"`
-}
-
-func newErrorResponse(msg string) *ResponseMessage {
-	return &ResponseMessage{
-		Type:    ResponseTypeError,
-		Payload: []byte(msg),
+func newErrorMessage(msg error) *SendMessage {
+	return &SendMessage{
+		Type:    SendMessageTypeError,
+		Payload: []byte(msg.Error()),
 	}
 }

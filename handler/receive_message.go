@@ -18,22 +18,24 @@ func (h *Handler) HandleReceiveMessage(c *model.Client, conn *websocket.Conn) {
 			return
 		}
 		// Unmarshalして適切なmethod実行
-		var req RequestMessage
+		var req ReceiveMessage
 		if err := json.Unmarshal(msg, &req); err != nil {
 			// send error message
 			continue
 		}
 
-		var resp *ResponseMessage
+		var resp *SendMessage
 		switch req.Type {
-		case RequestTypeOffer:
-			resp = h.sdpOffer(c, req.Payload)
-		case RequestTypeAnswer:
-			resp = h.sdpAnswer(c, req.Payload)
+		case ReceiveMessageTypeJoinRoom:
+			resp = h.handleJoinRoom(c, req.Payload)
+		case ReceiveMessageTypeOffer:
+			resp = h.handleSDPOffer(c, req.Payload)
+		case ReceiveMessageTypeAnswer:
+			resp = h.handleSDPAnswer(c, req.Payload)
 		default:
 			// send bad request
 			// invalid type
-			resp = newErrorResponse(ErrMsgInvalidRequestType)
+			resp = newErrorMessage(ErrMsgInvalidType)
 		}
 
 		if resp == nil {
@@ -49,34 +51,41 @@ func (h *Handler) HandleReceiveMessage(c *model.Client, conn *websocket.Conn) {
 	}
 }
 
-type RequestSDPOffer struct {
+type MessageJoinRoom struct {
+	RoomID string `json:"room_id"`
+}
+
+func (h *Handler) handleJoinRoom(c *model.Client, msg []byte) *SendMessage {
+	return h.manager.JoinRoom()
+}
+
+type MessageSDPOffer struct {
 	SDP *model.SDP `json:"sdp"`
 }
 
 // SDP offerが来た時に呼ばれる。Room IDの
-func (h *Handler) sdpOffer(c *model.Client, msg []byte) *ResponseMessage {
-	var req RequestSDPOffer
+func (h *Handler) handleSDPOffer(c *model.Client, msg []byte) *SendMessage {
+	var req MessageSDPOffer
 	if err := json.Unmarshal(msg, &req); err != nil {
-		return newErrorResponse(ErrMsgInvalidRequestPayload)
+		return newErrorMessage(ErrMsgInvalidPayload)
 	}
 	if err := h.manager.TransferSDPOffer(c, req.SDP); err != nil {
-		return newErrorResponse(ErrMsgInternalError)
+		return newErrorMessage(ErrMsgInternalError)
 	}
 	return nil
-
 }
 
-type RequestSDPAnswer struct {
+type MessageSDPAnswer struct {
 	SDP *model.SDP `json:"sdp"`
 }
 
-func (h *Handler) sdpAnswer(c *model.Client, msg []byte) *ResponseMessage {
-	var req RequestSDPAnswer
+func (h *Handler) handleSDPAnswer(c *model.Client, msg []byte) *SendMessage {
+	var req MessageSDPAnswer
 	if err := json.Unmarshal(msg, &req); err != nil {
-		return newErrorResponse(ErrMsgInvalidRequestPayload)
+		return newErrorMessage(ErrMsgInvalidPayload)
 	}
 	if err := h.manager.TransferSDPAnswer(c, req.SDP); err != nil {
-		return newErrorResponse(ErrMsgInternalError)
+		return newErrorMessage(ErrMsgInternalError)
 	}
 	return nil
 }
