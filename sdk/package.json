@@ -1,0 +1,21 @@
+{
+  "name": "singo-sdk",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/tockn/singo",
+  "author": "tockn",
+  "license": "MIT",
+  "scripts": {
+    "build": "webpack --mode=development",
+    "start": "webpack-dev-server --mode=development"
+  },
+  "devDependencies": {
+    "@types/terser-webpack-plugin": "^2.2.0",
+    "babel-jest": "^25.5.1",
+    "ts-loader": "^7.0.1",
+    "typescript": "^3.8.3",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3"
+  }
+}
