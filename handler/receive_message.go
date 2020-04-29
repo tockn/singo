@@ -33,11 +33,19 @@ func (h *Handler) HandleReceiveMessage(c *model.Client, conn *websocket.Conn) {
 		default:
 			// send bad request
 			// invalid type
+			resp = newErrorResponse(ErrMsgInvalidRequestType)
 		}
+
 		if resp == nil {
 			continue
 		}
-		// TODO send message
+		respMsg, err := json.Marshal(resp)
+		if err != nil {
+			continue
+		}
+		if err := sendMessage(conn, respMsg); err != nil {
+			continue
+		}
 	}
 }
 
@@ -49,12 +57,13 @@ type RequestSDPOffer struct {
 func (h *Handler) sdpOffer(c *model.Client, msg []byte) *ResponseMessage {
 	var req RequestSDPOffer
 	if err := json.Unmarshal(msg, &req); err != nil {
-		return newErrorResponse(nil)
+		return newErrorResponse(ErrMsgInvalidRequestPayload)
 	}
 	if err := h.manager.TransferSDPOffer(c, req.SDP); err != nil {
-		return newErrorResponse(nil)
+		return newErrorResponse(ErrMsgInternalError)
 	}
 	return nil
+
 }
 
 type RequestSDPAnswer struct {
@@ -64,10 +73,10 @@ type RequestSDPAnswer struct {
 func (h *Handler) sdpAnswer(c *model.Client, msg []byte) *ResponseMessage {
 	var req RequestSDPAnswer
 	if err := json.Unmarshal(msg, &req); err != nil {
-		return newErrorResponse(nil)
+		return newErrorResponse(ErrMsgInvalidRequestPayload)
 	}
 	if err := h.manager.TransferSDPAnswer(c, req.SDP); err != nil {
-		return newErrorResponse(nil)
+		return newErrorResponse(ErrMsgInternalError)
 	}
 	return nil
 }

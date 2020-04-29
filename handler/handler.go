@@ -37,14 +37,20 @@ var (
 	ResponseTypeAnswer ResponseType = "answer"
 )
 
+var (
+	ErrMsgInvalidRequestType    = "invalid request type"
+	ErrMsgInvalidRequestPayload = "invalid request payload"
+	ErrMsgInternalError         = "internal error"
+)
+
 type ResponseMessage struct {
 	Type    ResponseType    `json:"type"`
 	Payload json.RawMessage `json:"payload"`
 }
 
-func newErrorResponse(payload json.RawMessage) *ResponseMessage {
+func newErrorResponse(msg string) *ResponseMessage {
 	return &ResponseMessage{
 		Type:    ResponseTypeError,
-		Payload: payload,
+		Payload: []byte(msg),
 	}
 }
