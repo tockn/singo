@@ -2,6 +2,8 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
+	"net/http"
 
 	"github.com/tockn/singo/manager"
 
@@ -19,12 +21,15 @@ func NewHandler(man *manager.Manager) *Handler {
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 }
 
 type ReceiveMessageType string
 
 var (
-	ReceiveMessageTypeJoinRoom ReceiveMessageType = "join room"
+	ReceiveMessageTypeJoinRoom ReceiveMessageType = "join"
 	ReceiveMessageTypeOffer    ReceiveMessageType = "offer"
 	ReceiveMessageTypeAnswer   ReceiveMessageType = "answer"
 )
@@ -37,9 +42,10 @@ type ReceiveMessage struct {
 type SendMessageType string
 
 var (
-	SendMessageTypeError  SendMessageType = "error"
-	SendMessageTypeOffer  SendMessageType = "offer"
-	SendMessageTypeAnswer SendMessageType = "answer"
+	SendMessageTypeNotifyClientID SendMessageType = "notify-client-id"
+	SendMessageTypeError          SendMessageType = "error"
+	SendMessageTypeOffer          SendMessageType = "offer"
+	SendMessageTypeAnswer         SendMessageType = "answer"
 )
 
 type ErrorMessage string
@@ -60,6 +66,7 @@ type SendMessage struct {
 }
 
 func newErrorMessage(msg error) *SendMessage {
+	log.Println("error:", msg)
 	return &SendMessage{
 		Type:    SendMessageTypeError,
 		Payload: []byte(msg.Error()),

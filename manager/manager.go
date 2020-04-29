@@ -20,7 +20,12 @@ func (m *Manager) CreateRoom(name string) (*model.Room, error) {
 
 func (m *Manager) JoinRoom(c *model.Client, roomID string) error {
 	r, err := m.roomRepo.Get(roomID)
-	if err != nil {
+	if err == repository.ErrNotFound {
+		r = model.NewRoom(roomID)
+		if _, err := m.roomRepo.Create(r); err != nil {
+			return err
+		}
+	} else if err != nil {
 		return err
 	}
 	r.Clients[c.ID] = c
@@ -41,7 +46,7 @@ func (m *Manager) TransferSDPOffer(senderClient *model.Client, sdp *model.SDP) e
 	}
 	msg := &model.Message{
 		Type:    model.MessageTypeSDPOffer,
-		Payload: &SDPOfferPayload{SDP: sdp},
+		Payload: SDPOfferPayload{SDP: sdp},
 	}
 	for _, c := range r.Clients {
 		if c.ID == senderClient.ID {
@@ -63,7 +68,7 @@ func (m *Manager) TransferSDPAnswer(senderClient *model.Client, sdp *model.SDP) 
 	}
 	msg := &model.Message{
 		Type:    model.MessageTypeSDPAnswer,
-		Payload: &SDPAnswerPayload{SDP: sdp},
+		Payload: SDPAnswerPayload{SDP: sdp},
 	}
 	for _, c := range r.Clients {
 		if c.ID == senderClient.ID {

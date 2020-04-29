@@ -8,7 +8,7 @@ import (
 	"github.com/tockn/singo/model"
 )
 
-type ResponseCreateConnection struct {
+type SendClientID struct {
 	ClientID string `json:"client_id"`
 }
 
@@ -23,11 +23,11 @@ func (h *Handler) CreateConnection(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	go h.HandleSendMessage(ctx, c, conn)
 	go h.HandleReceiveMessage(c, conn)
-	resp := &ResponseCreateConnection{ClientID: c.ID}
-	body, err := json.Marshal(resp)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.Write(body)
+	resp := &SendClientID{ClientID: c.ID}
+	payload, _ := json.Marshal(resp)
+	body, _ := json.Marshal(SendMessage{
+		Type:    SendMessageTypeNotifyClientID,
+		Payload: payload,
+	})
+	sendMessage(conn, body)
 }
