@@ -56,7 +56,14 @@ type MessageJoinRoom struct {
 }
 
 func (h *Handler) handleJoinRoom(c *model.Client, msg []byte) *SendMessage {
-	return h.manager.JoinRoom()
+	var req MessageJoinRoom
+	if err := json.Unmarshal(msg, &req); err != nil {
+		return newErrorMessage(ErrMsgInvalidPayload)
+	}
+	if err := h.manager.JoinRoom(c, req.RoomID); err != nil {
+		return newErrorMessage(ErrMsgInvalidPayload)
+	}
+	return nil
 }
 
 type MessageSDPOffer struct {

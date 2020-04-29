@@ -9,6 +9,10 @@ type Manager struct {
 	roomRepo repository.Room
 }
 
+func NewManager(roomRepo repository.Room) *Manager {
+	return &Manager{roomRepo: roomRepo}
+}
+
 func (m *Manager) CreateRoom(name string) (*model.Room, error) {
 	r := model.NewRoom(name)
 	return m.roomRepo.Create(r)

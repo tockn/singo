@@ -12,6 +12,10 @@ type Handler struct {
 	manager *manager.Manager
 }
 
+func NewHandler(man *manager.Manager) *Handler {
+	return &Handler{manager: man}
+}
+
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,

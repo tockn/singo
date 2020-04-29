@@ -1,6 +1,10 @@
 package repository
 
-import "github.com/tockn/singo/model"
+import (
+	"errors"
+
+	"github.com/tockn/singo/model"
+)
 
 type Room interface {
 	Get(roomID string) (*model.Room, error)
@@ -8,3 +12,7 @@ type Room interface {
 	Create(r *model.Room) (*model.Room, error)
 	GetByClientID(clientID string) (*model.Room, error)
 }
+
+var (
+	ErrNotFound = errors.New("not found")
+)

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
@@ -19,7 +20,8 @@ func (h *Handler) CreateConnection(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	c := model.NewClient("name")
-	go h.HandleSendMessage(c, conn)
+	ctx := context.Background()
+	go h.HandleSendMessage(ctx, c, conn)
 	go h.HandleReceiveMessage(c, conn)
 	resp := &ResponseCreateConnection{ClientID: c.ID}
 	body, err := json.Marshal(resp)
