@@ -36,7 +36,8 @@ func (m *Manager) JoinRoom(c *model.Client, roomID string) error {
 }
 
 type SDPOfferPayload struct {
-	SDP *model.SDP
+	ClientID string
+	SDP      *model.SDP
 }
 
 func (m *Manager) TransferSDPOffer(senderClient *model.Client, sdp *model.SDP) error {
@@ -46,7 +47,7 @@ func (m *Manager) TransferSDPOffer(senderClient *model.Client, sdp *model.SDP) e
 	}
 	msg := &model.Message{
 		Type:    model.MessageTypeSDPOffer,
-		Payload: SDPOfferPayload{SDP: sdp},
+		Payload: SDPOfferPayload{ClientID: senderClient.ID, SDP: sdp},
 	}
 	for _, c := range r.Clients {
 		if c.ID == senderClient.ID {
@@ -58,7 +59,8 @@ func (m *Manager) TransferSDPOffer(senderClient *model.Client, sdp *model.SDP) e
 }
 
 type SDPAnswerPayload struct {
-	SDP *model.SDP
+	ClientID string
+	SDP      *model.SDP
 }
 
 func (m *Manager) TransferSDPAnswer(senderClient *model.Client, sdp *model.SDP) error {
@@ -68,7 +70,7 @@ func (m *Manager) TransferSDPAnswer(senderClient *model.Client, sdp *model.SDP) 
 	}
 	msg := &model.Message{
 		Type:    model.MessageTypeSDPAnswer,
-		Payload: SDPAnswerPayload{SDP: sdp},
+		Payload: SDPAnswerPayload{ClientID: senderClient.ID, SDP: sdp},
 	}
 	for _, c := range r.Clients {
 		if c.ID == senderClient.ID {

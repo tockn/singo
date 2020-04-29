@@ -1,4 +1,5 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   entry: {
     bundle: './src/app.ts'
@@ -11,7 +12,8 @@ module.exports = {
     extensions:['.ts','.js']
   },
   devServer: {
-    contentBase: path.join(__dirname,'dist')
+    contentBase: path.join(__dirname,'dist'),
+    open: true
   },
   module: {
     rules: [
@@ -19,5 +21,8 @@ module.exports = {
         test:/\.ts$/,loader:'ts-loader'
       }
     ]
-  }
+  },
+  plugins: [
+    new HtmlWebpackPlugin()
+  ]
 };

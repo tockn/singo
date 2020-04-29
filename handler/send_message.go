@@ -48,7 +48,8 @@ func sendMessage(conn *websocket.Conn, msg []byte) error {
 }
 
 type SendMessageSDPOfferPayload struct {
-	SDP *model.SDP `json:"sdp"`
+	ClientID string     `json:"client_id"`
+	SDP      *model.SDP `json:"sdp"`
 }
 
 func sendSDPOffer(conn *websocket.Conn, msg *model.Message) error {
@@ -56,7 +57,7 @@ func sendSDPOffer(conn *websocket.Conn, msg *model.Message) error {
 	if !ok {
 		return ErrMsgInvalidPayload
 	}
-	p, err := json.Marshal(&SendMessageSDPOfferPayload{SDP: mp.SDP})
+	p, err := json.Marshal(&SendMessageSDPOfferPayload{SDP: mp.SDP, ClientID: mp.ClientID})
 	if err != nil {
 		return ErrMsgInvalidPayload
 	}
@@ -72,7 +73,8 @@ func sendSDPOffer(conn *websocket.Conn, msg *model.Message) error {
 }
 
 type SendMessageSDPAnswerPayload struct {
-	SDP *model.SDP `json:"sdp"`
+	ClientID string     `json:"client_id"`
+	SDP      *model.SDP `json:"sdp"`
 }
 
 func sendSDPAnswer(conn *websocket.Conn, msg *model.Message) error {
@@ -80,7 +82,7 @@ func sendSDPAnswer(conn *websocket.Conn, msg *model.Message) error {
 	if !ok {
 		return ErrMsgInvalidPayload
 	}
-	p, err := json.Marshal(&SendMessageSDPAnswerPayload{SDP: mp.SDP})
+	p, err := json.Marshal(&SendMessageSDPAnswerPayload{SDP: mp.SDP, ClientID: mp.ClientID})
 	if err != nil {
 		return ErrMsgInvalidPayload
 	}
