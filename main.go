@@ -21,9 +21,9 @@ func run() error {
 	man := manager.NewManager(roomRepo)
 	han := handler.NewHandler(man)
 
-	r := chi.NewMux()
+	r := chi.NewRouter()
 	r.Get("/connect", han.CreateConnection)
 
 	log.Println("running...")
-	return http.ListenAndServe(":5000", nil)
+	return http.ListenAndServe(":5000", r)
 }
