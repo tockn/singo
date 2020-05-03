@@ -8,6 +8,7 @@ export default class Client {
   public stream: MediaStream;
 
   public onTrack: ((clientId: string, stream: MediaStream) => any);
+  public onLeave: ((clientId: string) => any);
 
   constructor(options?: ClientOptions) {
     this.endpoint = options?.SignalingServerEndpoint || userEnv.wsUrl;
@@ -95,6 +96,9 @@ export default class Client {
       case MessageType.NewClient:
         this.handleNewClient(data.payload);
         break;
+      case MessageType.LeaveClient:
+        this.handleLeaveClient(data.payload);
+        break;
       case MessageType.Offer:
         await this.handleMessageOffer(data.payload);
         break;
@@ -117,6 +121,14 @@ export default class Client {
         this.sendOffer(clientId);
       }
     };
+  }
+
+  private async handleLeaveClient(payload: any) {
+    const clientId = payload.client_id;
+    const pc = this.pcs.get(clientId);
+    pc.close();
+    this.pcs.delete(clientId);
+    this.onLeave(clientId);
   }
 
   public async createOffer(clientId: string) {
@@ -187,6 +199,7 @@ interface ClientOptions {
 enum MessageType {
   NotifyClientId = 'notify-client-id',
     NewClient = 'new-client',
+    LeaveClient = 'leave-client',
     Error = 'error',
     Offer = 'offer',
     Answer = 'answer'

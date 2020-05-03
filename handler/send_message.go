@@ -15,7 +15,7 @@ func (h *Handler) HandleSendMessage(ctx context.Context, c *model.Client, conn *
 	defer func() {
 		t.Stop()
 		_ = conn.Close()
-		_ = h.manager.ExitRoom(c)
+		_ = h.manager.LeaveRoom(c)
 	}()
 	for {
 		select {

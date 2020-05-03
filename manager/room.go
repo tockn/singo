@@ -35,11 +35,12 @@ func (rm *Room) JoinRoom(c *model.Client, roomID string) error {
 	return rm.notifyNewClient(roomID, c)
 }
 
-func (rm *Room) ExitRoom(c *model.Client) error {
+func (rm *Room) LeaveRoom(c *model.Client) error {
 	r, err := rm.roomRepo.GetByClientID(c.ID)
 	if err != nil {
 		return err
 	}
+	go rm.notifyLeaveClient(r.ID, c)
 	delete(r.Clients, c.ID)
 	if _, err := rm.roomRepo.Update(r); err != nil {
 		return err
@@ -59,6 +60,28 @@ func (rm *Room) notifyNewClient(roomID string, nc *model.Client) error {
 	msg := &model.Message{
 		Type:    model.MessageTypeNewClient,
 		Payload: NewClientPayload{ClientID: nc.ID},
+	}
+	for _, c := range r.Clients {
+		if c.ID == nc.ID {
+			continue
+		}
+		c.Send <- msg
+	}
+	return nil
+}
+
+type LeaveClientPayload struct {
+	ClientID string `json:"client_id"`
+}
+
+func (rm *Room) notifyLeaveClient(roomID string, nc *model.Client) error {
+	r, err := rm.roomRepo.Get(roomID)
+	if err != nil {
+		return err
+	}
+	msg := &model.Message{
+		Type:    model.MessageTypeLeaveClient,
+		Payload: LeaveClientPayload{ClientID: nc.ID},
 	}
 	for _, c := range r.Clients {
 		if c.ID == nc.ID {

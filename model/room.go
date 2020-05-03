@@ -39,6 +39,7 @@ var (
 	MessageTypeSDPOffer       MessageType = "offer"
 	MessageTypeSDPAnswer      MessageType = "answer"
 	MessageTypeNewClient      MessageType = "new-client"
+	MessageTypeLeaveClient    MessageType = "leave-client"
 )
 
 type Message struct {

@@ -1,9 +1,11 @@
 import Client from "./client";
 
 const videos = new Map<string, HTMLVideoElement>();
+const btn = document.querySelector('button');
 
 async function f() {
   try {
+    btn.disabled = true;
     const c = new Client();
     await c.joinRoom('hoge');
     c.onTrack = ((clientId, stream) => {
@@ -18,10 +20,15 @@ async function f() {
       $video.srcObject = stream;
       $video.volume = 0;
       $video.play();
-    })
+    });
+    c.onLeave = ((clientId) => {
+      const elId = `#partner-${clientId}`;
+      const pre = document.getElementById(elId);
+      pre?.parentNode.removeChild(pre);
+    });
   } catch (e) {
     document.querySelector('#error').innerHTML = e
   }
 }
-const btn = document.querySelector('button');
+
 btn.onclick = f;
