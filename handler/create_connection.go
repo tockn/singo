@@ -25,8 +25,8 @@ func (h *Handler) CreateConnection(w http.ResponseWriter, r *http.Request) {
 	go h.HandleReceiveMessage(c, conn)
 	resp := &SendClientID{ClientID: c.ID}
 	payload, _ := json.Marshal(resp)
-	body, _ := json.Marshal(SendMessage{
-		Type:    SendMessageTypeNotifyClientID,
+	body, _ := json.Marshal(model.Message{
+		Type:    model.MessageTypeNotifyClientID,
 		Payload: payload,
 	})
 	sendMessage(conn, body)

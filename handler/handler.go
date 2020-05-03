@@ -42,10 +42,9 @@ type ReceiveMessage struct {
 type SendMessageType string
 
 var (
-	SendMessageTypeNotifyClientID SendMessageType = "notify-client-id"
-	SendMessageTypeError          SendMessageType = "error"
-	SendMessageTypeOffer          SendMessageType = "offer"
-	SendMessageTypeAnswer         SendMessageType = "answer"
+	SendMessageTypeError  SendMessageType = "error"
+	SendMessageTypeOffer  SendMessageType = "offer"
+	SendMessageTypeAnswer SendMessageType = "answer"
 )
 
 type ErrorMessage string

@@ -35,11 +35,13 @@ func NewClient(name string) *Client {
 type MessageType string
 
 var (
-	MessageTypeSDPOffer  MessageType = "offer"
-	MessageTypeSDPAnswer MessageType = "answer"
+	MessageTypeNotifyClientID MessageType = "notify-client-id"
+	MessageTypeSDPOffer       MessageType = "offer"
+	MessageTypeSDPAnswer      MessageType = "answer"
+	MessageTypeNewClient      MessageType = "new-client"
 )
 
 type Message struct {
-	Type    MessageType
-	Payload interface{}
+	Type    MessageType `json:"type"`
+	Payload interface{} `json:"payload"`
 }

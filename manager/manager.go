@@ -1,8 +1,6 @@
 package manager
 
 import (
-	"log"
-
 	"github.com/tockn/singo/model"
 	"github.com/tockn/singo/repository"
 )
@@ -34,13 +32,34 @@ func (m *Manager) JoinRoom(c *model.Client, roomID string) error {
 	if _, err := m.roomRepo.Update(r); err != nil {
 		return err
 	}
-	log.Println("join: ", c.ID)
+	return m.notifyNewClient(roomID, c)
+}
+
+type NewClientPayload struct {
+	ClientID string `json:"client_id"`
+}
+
+func (m *Manager) notifyNewClient(roomID string, nc *model.Client) error {
+	r, err := m.roomRepo.Get(roomID)
+	if err != nil {
+		return err
+	}
+	msg := &model.Message{
+		Type:    model.MessageTypeNewClient,
+		Payload: NewClientPayload{ClientID: nc.ID},
+	}
+	for _, c := range r.Clients {
+		if c.ID == nc.ID {
+			continue
+		}
+		c.Send <- msg
+	}
 	return nil
 }
 
 type SDPOfferPayload struct {
-	ClientID string
-	SDP      *model.SDP
+	ClientID string     `json:"client_id"`
+	SDP      *model.SDP `json:"sdp"`
 }
 
 func (m *Manager) TransferSDPOffer(senderClient *model.Client, sdp *model.SDP) error {
@@ -62,8 +81,8 @@ func (m *Manager) TransferSDPOffer(senderClient *model.Client, sdp *model.SDP) e
 }
 
 type SDPAnswerPayload struct {
-	ClientID string
-	SDP      *model.SDP
+	ClientID string     `json:"client_id"`
+	SDP      *model.SDP `json:"sdp"`
 }
 
 func (m *Manager) TransferSDPAnswer(senderClient *model.Client, sdp *model.SDP) error {

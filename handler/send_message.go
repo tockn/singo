@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/tockn/singo/manager"
-
 	"github.com/gorilla/websocket"
 	"github.com/tockn/singo/model"
 )
@@ -18,14 +16,12 @@ func (h *Handler) HandleSendMessage(ctx context.Context, c *model.Client, conn *
 	for {
 		select {
 		case msg := <-c.Send:
-			var err error
-			switch msg.Type {
-			case model.MessageTypeSDPOffer:
-				err = sendSDPOffer(conn, msg)
-			case model.MessageTypeSDPAnswer:
-				err = sendSDPAnswer(conn, msg)
-			}
+			bs, err := json.Marshal(msg)
 			if err != nil {
+				log.Println(err)
+				return
+			}
+			if err := sendMessage(conn, bs); err != nil {
 				log.Println(err)
 				return
 			}
@@ -47,52 +43,62 @@ func sendMessage(conn *websocket.Conn, msg []byte) error {
 	return nil
 }
 
-type SendMessageSDPOfferPayload struct {
-	ClientID string     `json:"client_id"`
-	SDP      *model.SDP `json:"sdp"`
-}
-
-func sendSDPOffer(conn *websocket.Conn, msg *model.Message) error {
-	mp, ok := msg.Payload.(manager.SDPOfferPayload)
-	if !ok {
-		return ErrMsgInvalidPayload
-	}
-	p, err := json.Marshal(&SendMessageSDPOfferPayload{SDP: mp.SDP, ClientID: mp.ClientID})
-	if err != nil {
-		return ErrMsgInvalidPayload
-	}
-	resp := &SendMessage{
-		Type:    SendMessageTypeOffer,
-		Payload: p,
-	}
-	respBody, err := json.Marshal(resp)
-	if err != nil {
-		return ErrMsgInvalidPayload
-	}
-	return sendMessage(conn, respBody)
-}
-
-type SendMessageSDPAnswerPayload struct {
-	ClientID string     `json:"client_id"`
-	SDP      *model.SDP `json:"sdp"`
-}
-
-func sendSDPAnswer(conn *websocket.Conn, msg *model.Message) error {
-	mp, ok := msg.Payload.(manager.SDPAnswerPayload)
-	if !ok {
-		return ErrMsgInvalidPayload
-	}
-	p, err := json.Marshal(&SendMessageSDPAnswerPayload{SDP: mp.SDP, ClientID: mp.ClientID})
-	if err != nil {
-		return ErrMsgInvalidPayload
-	}
-	resp := &SendMessage{
-		Type:    SendMessageTypeAnswer,
-		Payload: p,
-	}
-	respBody, err := json.Marshal(resp)
-	if err != nil {
-		return ErrMsgInvalidPayload
-	}
-	return sendMessage(conn, respBody)
-}
+//func sendSDPOffer(conn *websocket.Conn, msg *model.Message) error {
+//	mp, ok := msg.Payload.(manager.SDPOfferPayload)
+//	if !ok {
+//		return ErrMsgInvalidPayload
+//	}
+//	p, err := json.Marshal(mp)
+//	if err != nil {
+//		return ErrMsgInvalidPayload
+//	}
+//	resp := &SendMessage{
+//		Type:    SendMessageTypeOffer,
+//		Payload: p,
+//	}
+//	respBody, err := json.Marshal(resp)
+//	if err != nil {
+//		return ErrMsgInvalidPayload
+//	}
+//	return sendMessage(conn, respBody)
+//}
+//
+//func sendSDPAnswer(conn *websocket.Conn, msg *model.Message) error {
+//	mp, ok := msg.Payload.(manager.SDPAnswerPayload)
+//	if !ok {
+//		return ErrMsgInvalidPayload
+//	}
+//	p, err := json.Marshal(mp)
+//	if err != nil {
+//		return ErrMsgInvalidPayload
+//	}
+//	resp := &SendMessage{
+//		Type:    SendMessageTypeAnswer,
+//		Payload: p,
+//	}
+//	respBody, err := json.Marshal(resp)
+//	if err != nil {
+//		return ErrMsgInvalidPayload
+//	}
+//	return sendMessage(conn, respBody)
+//}
+//
+//func sendSDPAnswer(conn *websocket.Conn, msg *model.Message) error {
+//	mp, ok := msg.Payload.(manager.NewClientPayload)
+//	if !ok {
+//		return ErrMsgInvalidPayload
+//	}
+//	p, err := json.Marshal(mp)
+//	if err != nil {
+//		return ErrMsgInvalidPayload
+//	}
+//	resp := &SendMessage{
+//		Type:    SendMessageTypeAnswer,
+//		Payload: p,
+//	}
+//	respBody, err := json.Marshal(resp)
+//	if err != nil {
+//		return ErrMsgInvalidPayload
+//	}
+//	return sendMessage(conn, respBody)
+//}
