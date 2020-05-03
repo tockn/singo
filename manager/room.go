@@ -5,42 +5,42 @@ import (
 	"github.com/tockn/singo/repository"
 )
 
-type Manager struct {
+type Room struct {
 	roomRepo repository.Room
 }
 
-func NewManager(roomRepo repository.Room) *Manager {
-	return &Manager{roomRepo: roomRepo}
+func NewManager(roomRepo repository.Room) *Room {
+	return &Room{roomRepo: roomRepo}
 }
 
-func (m *Manager) CreateRoom(name string) (*model.Room, error) {
+func (rm *Room) CreateRoom(name string) (*model.Room, error) {
 	r := model.NewRoom(name)
-	return m.roomRepo.Create(r)
+	return rm.roomRepo.Create(r)
 }
 
-func (m *Manager) JoinRoom(c *model.Client, roomID string) error {
-	r, err := m.roomRepo.Get(roomID)
+func (rm *Room) JoinRoom(c *model.Client, roomID string) error {
+	r, err := rm.roomRepo.Get(roomID)
 	if err == repository.ErrNotFound {
 		r = model.NewRoom(roomID)
-		if _, err := m.roomRepo.Create(r); err != nil {
+		if _, err := rm.roomRepo.Create(r); err != nil {
 			return err
 		}
 	} else if err != nil {
 		return err
 	}
 	r.Clients[c.ID] = c
-	if _, err := m.roomRepo.Update(r); err != nil {
+	if _, err := rm.roomRepo.Update(r); err != nil {
 		return err
 	}
-	return m.notifyNewClient(roomID, c)
+	return rm.notifyNewClient(roomID, c)
 }
 
 type NewClientPayload struct {
 	ClientID string `json:"client_id"`
 }
 
-func (m *Manager) notifyNewClient(roomID string, nc *model.Client) error {
-	r, err := m.roomRepo.Get(roomID)
+func (rm *Room) notifyNewClient(roomID string, nc *model.Client) error {
+	r, err := rm.roomRepo.Get(roomID)
 	if err != nil {
 		return err
 	}
@@ -62,8 +62,8 @@ type SDPOfferPayload struct {
 	SDP      *model.SDP `json:"sdp"`
 }
 
-func (m *Manager) TransferSDPOffer(senderClient *model.Client, sdp *model.SDP) error {
-	r, err := m.roomRepo.GetByClientID(senderClient.ID)
+func (rm *Room) TransferSDPOffer(senderClient *model.Client, sdp *model.SDP) error {
+	r, err := rm.roomRepo.GetByClientID(senderClient.ID)
 	if err != nil {
 		return err
 	}
@@ -85,8 +85,8 @@ type SDPAnswerPayload struct {
 	SDP      *model.SDP `json:"sdp"`
 }
 
-func (m *Manager) TransferSDPAnswer(senderClient *model.Client, sdp *model.SDP) error {
-	r, err := m.roomRepo.GetByClientID(senderClient.ID)
+func (rm *Room) TransferSDPAnswer(senderClient *model.Client, sdp *model.SDP) error {
+	r, err := rm.roomRepo.GetByClientID(senderClient.ID)
 	if err != nil {
 		return err
 	}
