@@ -5,8 +5,8 @@
   "author": "tockn",
   "license": "MIT",
   "scripts": {
-    "build": "webpack --mode=development",
-    "start": "webpack-dev-server --mode=development"
+    "build": "NODE_ENV=prod webpack --mode=development",
+    "start": "NODE_ENV=dev webpack-dev-server --mode=development"
   },
   "devDependencies": {
     "@types/terser-webpack-plugin": "^2.2.0",

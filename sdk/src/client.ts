@@ -1,3 +1,4 @@
+import userEnv from 'userEnv'
 export default class Client {
   private readonly endpoint: string;
   private ws: WebSocket;
@@ -9,18 +10,38 @@ export default class Client {
   public onTrack: ((clientId: string, stream: MediaStream) => any);
 
   constructor(options?: ClientOptions) {
-  this.endpoint = options?.SignalingServerEndpoint || 'wss://twitro.com';
+    this.endpoint = options?.SignalingServerEndpoint || userEnv.wsUrl;
   }
 
   public async createNewPeer(clientId: string): Promise<RTCPeerConnection> {
-    const pc = new RTCPeerConnection();
+    const pc = new RTCPeerConnection(
+      {'iceServers':[
+        {'urls': 'stun:stun.l.google.com:19302'},
+        {'urls': 'stun:stun1.l.google.com:19302'},
+        {'urls': 'stun:stun2.l.google.com:19302'}
+      ]}
+    );
     this.pcs.set(clientId, pc);
 
     if (!this.stream) {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
-      });
+      const stream = await navigator.mediaDevices.getUserMedia(
+        {
+          'audio': true,
+          'video': {
+            'width': {
+              'min': 300,
+              'max': 640
+            },
+            'height': {
+              'min': 200,
+              'max': 480
+            },
+            'frameRate': {
+              'max': 20
+            }
+          }
+        }
+      );
       this.stream = stream;
       const $video = document.querySelector('#my-screen') as HTMLVideoElement;
       $video.srcObject = stream;
@@ -118,15 +139,16 @@ export default class Client {
 
   private async handleMessageOffer(payload: any) {
     const clientId = payload.client_id as string;
+    console.log(clientId)
     const pc = await this.createNewPeer(clientId);
     await pc.setRemoteDescription({
-      type: "offer",
+      type: 'offer',
       sdp: payload.sdp,
     });
     await this.createAnswer(clientId);
     pc.onicecandidate = async (ev) => {
       if (!ev.candidate) {
-        this.sendAnswer(clientId);
+        await this.sendAnswer(clientId);
       }
     };
   }
@@ -152,7 +174,7 @@ export default class Client {
   private async handleMessageAnswer(payload: any) {
     const pc = this.pcs.get(payload.client_id);
     await pc.setRemoteDescription({
-      type: "answer",
+      type: 'answer',
       sdp: payload.sdp,
     });
   }
@@ -164,10 +186,10 @@ interface ClientOptions {
 
 enum MessageType {
   NotifyClientId = 'notify-client-id',
-  NewClient = 'new-client',
-  Error = 'error',
-  Offer = 'offer',
-  Answer = 'answer'
+    NewClient = 'new-client',
+    Error = 'error',
+    Offer = 'offer',
+    Answer = 'answer'
 }
 
 interface Message {
