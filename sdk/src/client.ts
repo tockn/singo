@@ -6,46 +6,45 @@ export default class Client {
   private clientId: string;
   public stream: MediaStream;
 
+  public onTrack: ((clientId: string, stream: MediaStream) => any);
+
   constructor(options?: ClientOptions) {
     this.endpoint = options?.SignalingServerEndpoint || 'ws://192.168.0.140:5000';
   }
 
-  public async createNewPeer() {
+  public async createNewPeer(clientId: string): Promise<RTCPeerConnection> {
     const pc = new RTCPeerConnection();
-    this.pcs.set('hoge', pc);
+    this.pcs.set(clientId, pc);
 
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    });
-    this.stream = stream;
-
-    for (const track of stream.getTracks()) {
-      pc.addTrack(track, stream);
+    if (!this.stream) {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      this.stream = stream;
+      const $video = document.querySelector('#my-screen') as HTMLVideoElement;
+      $video.srcObject = stream;
+      $video.volume = 0;
+      await $video.play();
     }
 
-    pc.onicecandidate = async (ev) => {
-      if (!ev.candidate) {
-        this.sendOffer();
-      }
-    };
+    for (const track of this.stream.getTracks()) {
+      pc.addTrack(track, this.stream);
+    }
 
+    // TODO 複数のVideo対応する
     if ('ontrack' in pc) {
       pc.ontrack = async (ev) => {
-          const $v = document.querySelector('#partner') as HTMLVideoElement;
-          $v.srcObject = ev.streams[0];
-          $v.volume = 0;
-          $v.play()
+        this.onTrack(clientId, ev.streams[0]);
       }
     } else {
       // @ts-ignore
       pc.onaddstream = (async ev => {
-          const $v = document.querySelector('#partner') as HTMLVideoElement;
-          $v.srcObject = ev.stream;
-          $v.volume = 0;
-          $v.play()
+        this.onTrack(clientId, ev.stream);
       });
     }
+
+    return pc;
   }
 
   public async joinRoom(roomID: string): Promise<void> {
@@ -67,27 +66,13 @@ export default class Client {
     }));
   }
 
-  public async createOffer() {
-    const pc = this.pcs.get('hoge');
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    // Trickle ICEならここで初期ICEを送る
-  }
-
-  public async sendOffer() {
-    const pc = this.pcs.get('hoge');
-    this.ws.send(JSON.stringify({
-      type: MessageType.Offer,
-      payload: {
-        sdp: pc.localDescription.sdp,
-      }
-    }));
-  }
-
   private async handleMessage(data: Message) {
     switch (data.type) {
       case MessageType.NotifyClientId:
         this.handleMessageNotifyClientId(data.payload);
+        break;
+      case MessageType.NewClient:
+        this.handleNewClient(data.payload);
         break;
       case MessageType.Offer:
         await this.handleMessageOffer(data.payload);
@@ -102,24 +87,70 @@ export default class Client {
     this.clientId = payload.client_id;
   }
 
+  private async handleNewClient(payload: any) {
+    const clientId = payload.client_id;
+    const pc = await this.createNewPeer(clientId);
+    await this.createOffer(clientId);
+    pc.onicecandidate = async (ev) => {
+      if (!ev.candidate) {
+        this.sendOffer(clientId);
+      }
+    };
+  }
+
+  public async createOffer(clientId: string) {
+    const pc = this.pcs.get(clientId);
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    // Trickle ICEならここで初期ICEを送る
+  }
+
+  public async sendOffer(clientId: string) {
+    const pc = this.pcs.get(clientId);
+    this.ws.send(JSON.stringify({
+      type: MessageType.Offer,
+      payload: {
+        sdp: pc.localDescription.sdp,
+        client_id: clientId,
+      }
+    }));
+  }
+
   private async handleMessageOffer(payload: any) {
-    const pc = this.pcs.get('hoge');
+    const clientId = payload.client_id as string;
+    const pc = await this.createNewPeer(clientId);
     await pc.setRemoteDescription({
       type: "offer",
       sdp: payload.sdp,
     });
+    await this.createAnswer(clientId);
+    pc.onicecandidate = async (ev) => {
+      if (!ev.candidate) {
+        this.sendAnswer(clientId);
+      }
+    };
+  }
+
+  public async createAnswer(clientId: string) {
+    const pc = this.pcs.get(clientId);
     const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    // Trickle ICEならここで初期ICEを送る
+  }
+
+  private sendAnswer(clientId: string) {
+    const pc = this.pcs.get(clientId);
     this.ws.send(JSON.stringify({
       type: MessageType.Answer,
       payload: {
-        sdp: answer.sdp
+        sdp: pc.localDescription.sdp,
+        client_id: clientId,
       }
     }));
-    await pc.setLocalDescription(answer)
   }
 
   private async handleMessageAnswer(payload: any) {
-    const pc = this.pcs.get('hoge');
+    const pc = this.pcs.get(payload.client_id);
     await pc.setRemoteDescription({
       type: "answer",
       sdp: payload.sdp,
@@ -133,6 +164,7 @@ interface ClientOptions {
 
 enum MessageType {
   NotifyClientId = 'notify-client-id',
+  NewClient = 'new-client',
   Error = 'error',
   Offer = 'offer',
   Answer = 'answer'
@@ -142,6 +174,3 @@ interface Message {
   type: MessageType
   payload: any
 }
-
-// stream取得でビデオ通話やり取り
-// 複数人対応のために、pc作成タイミングとかpcsとか色々

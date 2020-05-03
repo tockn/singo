@@ -67,7 +67,8 @@ func (h *Handler) handleJoinRoom(c *model.Client, msg []byte) *SendMessage {
 }
 
 type MessageSDPOffer struct {
-	SDP *model.SDP `json:"sdp"`
+	SDP      *model.SDP `json:"sdp"`
+	ClientID string     `json:"client_id"`
 }
 
 // SDP offerが来た時に呼ばれる。Room IDの
@@ -76,14 +77,15 @@ func (h *Handler) handleSDPOffer(c *model.Client, msg []byte) *SendMessage {
 	if err := json.Unmarshal(msg, &req); err != nil {
 		return newErrorMessage(ErrMsgInvalidPayload)
 	}
-	if err := h.manager.TransferSDPOffer(c, req.SDP); err != nil {
+	if err := h.manager.TransferSDPOffer(c, req.SDP, req.ClientID); err != nil {
 		return newErrorMessage(ErrMsgInternalError)
 	}
 	return nil
 }
 
 type MessageSDPAnswer struct {
-	SDP *model.SDP `json:"sdp"`
+	SDP      *model.SDP `json:"sdp"`
+	ClientID string     `json:"client_id"`
 }
 
 func (h *Handler) handleSDPAnswer(c *model.Client, msg []byte) *SendMessage {
@@ -91,7 +93,7 @@ func (h *Handler) handleSDPAnswer(c *model.Client, msg []byte) *SendMessage {
 	if err := json.Unmarshal(msg, &req); err != nil {
 		return newErrorMessage(ErrMsgInvalidPayload)
 	}
-	if err := h.manager.TransferSDPAnswer(c, req.SDP); err != nil {
+	if err := h.manager.TransferSDPAnswer(c, req.SDP, req.ClientID); err != nil {
 		return newErrorMessage(ErrMsgInternalError)
 	}
 	return nil

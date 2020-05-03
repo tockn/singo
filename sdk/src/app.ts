@@ -1,20 +1,27 @@
 import Client from "./client";
 
+const videos = new Map<string, HTMLVideoElement>();
+
 async function f() {
   try {
     const c = new Client();
-    await c.createNewPeer();
     await c.joinRoom('hoge');
-    const btn = document.querySelector('button');
-    btn.onclick = async () => {
-      await c.createOffer();
-    };
-    const $video = document.querySelector('#my-screen') as HTMLVideoElement;
-    $video.srcObject = c.stream;
-    $video.volume = 0;
-    await $video.play();
+    c.onTrack = ((clientId, stream) => {
+      const elId = `#partner-${clientId}`;
+      const pre = document.getElementById(elId);
+      pre?.parentNode.removeChild(pre);
+
+      const $video = document.createElement('video') as HTMLVideoElement;
+      $video.id = elId;
+      const pa = document.querySelector('#partners');
+      pa.appendChild($video);
+      $video.srcObject = stream;
+      $video.volume = 0;
+      $video.play();
+    })
   } catch (e) {
     document.querySelector('#error').innerHTML = e
   }
 }
-f();
+const btn = document.querySelector('button');
+btn.onclick = f;

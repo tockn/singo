@@ -62,7 +62,7 @@ type SDPOfferPayload struct {
 	SDP      *model.SDP `json:"sdp"`
 }
 
-func (rm *Room) TransferSDPOffer(senderClient *model.Client, sdp *model.SDP) error {
+func (rm *Room) TransferSDPOffer(senderClient *model.Client, sdp *model.SDP, clientID string) error {
 	r, err := rm.roomRepo.GetByClientID(senderClient.ID)
 	if err != nil {
 		return err
@@ -72,7 +72,7 @@ func (rm *Room) TransferSDPOffer(senderClient *model.Client, sdp *model.SDP) err
 		Payload: SDPOfferPayload{ClientID: senderClient.ID, SDP: sdp},
 	}
 	for _, c := range r.Clients {
-		if c.ID == senderClient.ID {
+		if c.ID != clientID {
 			continue
 		}
 		c.Send <- msg
@@ -85,7 +85,7 @@ type SDPAnswerPayload struct {
 	SDP      *model.SDP `json:"sdp"`
 }
 
-func (rm *Room) TransferSDPAnswer(senderClient *model.Client, sdp *model.SDP) error {
+func (rm *Room) TransferSDPAnswer(senderClient *model.Client, sdp *model.SDP, clientID string) error {
 	r, err := rm.roomRepo.GetByClientID(senderClient.ID)
 	if err != nil {
 		return err
@@ -95,7 +95,7 @@ func (rm *Room) TransferSDPAnswer(senderClient *model.Client, sdp *model.SDP) er
 		Payload: SDPAnswerPayload{ClientID: senderClient.ID, SDP: sdp},
 	}
 	for _, c := range r.Clients {
-		if c.ID == senderClient.ID {
+		if c.ID != clientID {
 			continue
 		}
 		c.Send <- msg
