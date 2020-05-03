@@ -30,11 +30,9 @@ export default class Client {
           'audio': true,
           'video': {
             'width': {
-              'min': 300,
               'max': 640
             },
             'height': {
-              'min': 200,
               'max': 480
             },
             'frameRate': {
@@ -151,18 +149,18 @@ export default class Client {
 
   private async handleMessageOffer(payload: any) {
     const clientId = payload.client_id as string;
-    console.log(clientId)
     const pc = await this.createNewPeer(clientId);
-    await pc.setRemoteDescription({
-      type: 'offer',
-      sdp: payload.sdp,
-    });
-    await this.createAnswer(clientId);
     pc.onicecandidate = async (ev) => {
       if (!ev.candidate) {
         await this.sendAnswer(clientId);
       }
     };
+    console.log(clientId, payload)
+    await pc.setRemoteDescription({
+      type: 'offer',
+      sdp: payload.sdp,
+    });
+    await this.createAnswer(clientId);
   }
 
   public async createAnswer(clientId: string) {

@@ -18,8 +18,8 @@ async function f() {
       const pa = document.querySelector('#partners');
       pa.appendChild($video);
       $video.srcObject = stream;
-      $video.volume = 0;
       $video.play();
+      $video.volume = 0;
     });
     c.onLeave = ((clientId) => {
       const elId = `#partner-${clientId}`;
@@ -27,6 +27,7 @@ async function f() {
       pre?.parentNode.removeChild(pre);
     });
   } catch (e) {
+    console.error(e)
     document.querySelector('#error').innerHTML = e
   }
 }
