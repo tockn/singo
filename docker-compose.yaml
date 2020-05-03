@@ -1,0 +1,23 @@
+version: "3"
+services:
+  https-portal:
+    image: steveltn/https-portal:1
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    environment:
+      DOMAINS: '192.168.0.140 -> http://web:8080'
+      STAGE: local
+    volumes:
+      - ./:/var/lib/https-portal
+  web:
+    image: singo-sdk:latest
+    ports:
+      - 8080:8080
+    depends_on:
+      - signaling
+  signaling:
+    image: singo:latest
+    ports:
+      - 5000:5000
