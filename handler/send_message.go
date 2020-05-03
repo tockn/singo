@@ -4,14 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/tockn/singo/model"
 )
 
 func (h *Handler) HandleSendMessage(ctx context.Context, c *model.Client, conn *websocket.Conn) {
+	t := time.NewTicker(1 * time.Second)
 	defer func() {
+		t.Stop()
 		_ = conn.Close()
+		_ = h.manager.ExitRoom(c)
 	}()
 	for {
 		select {
@@ -23,6 +27,11 @@ func (h *Handler) HandleSendMessage(ctx context.Context, c *model.Client, conn *
 			}
 			if err := sendMessage(conn, bs); err != nil {
 				log.Println(err)
+				return
+			}
+		case <-t.C:
+			if err := sendMessage(conn, []byte(`{'type':'ping'}`)); err != nil {
+				log.Println("disconnect: ", c.ID)
 				return
 			}
 		case <-ctx.Done():

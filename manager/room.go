@@ -35,6 +35,18 @@ func (rm *Room) JoinRoom(c *model.Client, roomID string) error {
 	return rm.notifyNewClient(roomID, c)
 }
 
+func (rm *Room) ExitRoom(c *model.Client) error {
+	r, err := rm.roomRepo.GetByClientID(c.ID)
+	if err != nil {
+		return err
+	}
+	delete(r.Clients, c.ID)
+	if _, err := rm.roomRepo.Update(r); err != nil {
+		return err
+	}
+	return nil
+}
+
 type NewClientPayload struct {
 	ClientID string `json:"client_id"`
 }
