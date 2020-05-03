@@ -13,7 +13,9 @@ module.exports = {
   },
   devServer: {
     contentBase: path.join(__dirname,'dist'),
-    open: true
+    open: true,
+    host: '0.0.0.0',
+    disableHostCheck: true
   },
   module: {
     rules: [
@@ -23,6 +25,8 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin()
+    new HtmlWebpackPlugin({
+      template: './index.html'
+    })
   ]
 };
