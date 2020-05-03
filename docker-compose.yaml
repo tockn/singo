@@ -12,12 +12,12 @@ services:
     volumes:
       - ./:/var/lib/https-portal
   web:
-    image: singo-sdk:latest
+    image: tockn/singo-sdk:latest
     ports:
       - 8080:8080
     depends_on:
       - signaling
   signaling:
-    image: singo:latest
+    image: tockn/singo:latest
     ports:
       - 5000:5000
