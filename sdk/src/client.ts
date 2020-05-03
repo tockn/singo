@@ -9,7 +9,7 @@ export default class Client {
   public onTrack: ((clientId: string, stream: MediaStream) => any);
 
   constructor(options?: ClientOptions) {
-    this.endpoint = options?.SignalingServerEndpoint || 'ws://192.168.0.140:5000';
+  this.endpoint = options?.SignalingServerEndpoint || 'wss://twitro.com';
   }
 
   public async createNewPeer(clientId: string): Promise<RTCPeerConnection> {

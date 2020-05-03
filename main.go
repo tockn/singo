@@ -20,6 +20,8 @@ func run() error {
 	man := manager.NewManager(roomRepo)
 	han := handler.NewHandler(man)
 
+  fs := http.FileServer(http.Dir("./sdk/dist"))
+  http.Handle("/", fs)
 	http.HandleFunc("/connect", han.CreateConnection)
 
 	log.Println("running...")
