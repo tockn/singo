@@ -13,3 +13,6 @@ all: sdk-build docker-build docker-push
 
 up:
 	docker-compose up --build
+
+sdk-dev:
+	cd sdk; yarn start

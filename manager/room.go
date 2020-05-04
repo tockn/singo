@@ -137,3 +137,21 @@ func (rm *Room) TransferSDPAnswer(senderClient *model.Client, sdp *model.SDP, cl
 	}
 	return nil
 }
+
+func (rm *Room) TransferICECandidate(senderClient *model.Client, sdp *model.SDP, clientID string) error {
+	r, err := rm.roomRepo.GetByClientID(senderClient.ID)
+	if err != nil {
+		return err
+	}
+	msg := &model.Message{
+		Type:    model.MessageTypeSDPAnswer,
+		Payload: SDPAnswerPayload{ClientID: senderClient.ID, SDP: sdp},
+	}
+	for _, c := range r.Clients {
+		if c.ID != clientID {
+			continue
+		}
+		c.Send <- msg
+	}
+	return nil
+}

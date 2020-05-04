@@ -5,7 +5,7 @@
   "author": "tockn",
   "license": "MIT",
   "scripts": {
-    "build": "NODE_ENV=prod webpack --mode=development",
+    "build": "NODE_ENV=prod webpack --mode=production",
     "start": "NODE_ENV=dev webpack-dev-server --mode=development"
   },
   "devDependencies": {

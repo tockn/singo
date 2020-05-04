@@ -6,24 +6,17 @@ export default class Client {
   private connected = false;
   private clientId: string;
   public stream: MediaStream;
+  public myScreen: HTMLVideoElement;
 
   public onTrack: ((clientId: string, stream: MediaStream) => any);
   public onLeave: ((clientId: string) => any);
 
-  constructor(options?: ClientOptions) {
+  constructor(myScreen: HTMLVideoElement, options?: ClientOptions) {
+    this.myScreen = myScreen;
     this.endpoint = options?.SignalingServerEndpoint || userEnv.wsUrl;
   }
 
-  public async createNewPeer(clientId: string): Promise<RTCPeerConnection> {
-    const pc = new RTCPeerConnection(
-      {'iceServers':[
-        {'urls': 'stun:stun.l.google.com:19302'},
-        {'urls': 'stun:stun1.l.google.com:19302'},
-        {'urls': 'stun:stun2.l.google.com:19302'}
-      ]}
-    );
-    this.pcs.set(clientId, pc);
-
+  private async getUserMedia() {
     if (!this.stream) {
       const stream = await navigator.mediaDevices.getUserMedia(
         {
@@ -42,17 +35,26 @@ export default class Client {
         }
       );
       this.stream = stream;
-      const $video = document.querySelector('#my-screen') as HTMLVideoElement;
-      $video.srcObject = stream;
-      $video.volume = 0;
-      await $video.play();
+      this.myScreen.srcObject = stream;
+      this.myScreen.volume = 0;
     }
+  }
 
+  public async createNewPeer(clientId: string): Promise<RTCPeerConnection> {
+    const pc = new RTCPeerConnection(
+      {'iceServers':[
+        {'urls': 'stun:stun.l.google.com:19302'},
+        {'urls': 'stun:stun1.l.google.com:19302'},
+        {'urls': 'stun:stun2.l.google.com:19302'}
+      ]}
+    );
+    this.pcs.set(clientId, pc);
+
+    await this.getUserMedia();
     for (const track of this.stream.getTracks()) {
       pc.addTrack(track, this.stream);
     }
 
-    // TODO 複数のVideo対応する
     if ('ontrack' in pc) {
       pc.ontrack = async (ev) => {
         this.onTrack(clientId, ev.streams[0]);
@@ -68,10 +70,16 @@ export default class Client {
   }
 
   public async joinRoom(roomID: string): Promise<void> {
+    try {
+      await this.getUserMedia();
+    } catch (e) {
+      alert('カメラの使用が許可されていないか、対応していないブラウザです')
+      return
+    }
     return new Promise<void>(((resolve, reject) => {
       this.ws = new WebSocket(`${this.endpoint}/connect`);
       this.ws.onmessage = async (e: MessageEvent) => {
-        await this.handleMessage(JSON.parse(e.data))
+        this.handleMessage(JSON.parse(e.data))
       };
       this.ws.onopen = (e: Event) => {
         this.connected = true;
@@ -152,10 +160,9 @@ export default class Client {
     const pc = await this.createNewPeer(clientId);
     pc.onicecandidate = async (ev) => {
       if (!ev.candidate) {
-        await this.sendAnswer(clientId);
+        this.sendAnswer(clientId);
       }
     };
-    console.log(clientId, payload)
     await pc.setRemoteDescription({
       type: 'offer',
       sdp: payload.sdp,
