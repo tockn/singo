@@ -15,34 +15,38 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator'
+import { Vue, Component } from "vue-property-decorator";
 import MediaQuery from "@/components/MediaQuery.vue";
 @Component({
-  components: {MediaQuery}
+  components: { MediaQuery }
 })
 export default class Home extends Vue {
-  public roomName = '';
+  public roomName = "";
   public join() {
-    this.$router.push(`/rooms/${this.roomName}`)
+    if (this.roomName === "") {
+      alert("error: Room Name is empty");
+      return;
+    }
+    this.$router.push(`/rooms/${this.roomName}`);
   }
 }
 </script>
 
 <style>
-  .home {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    height: 3.2rem;
-  }
-  .join-field {
-    display: flex;
-    justify-content: space-around;
-  }
-  .join-button {
-    height: 56px !important;
-  }
+.home {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  height: 3.2rem;
+}
+.join-field {
+  display: flex;
+  justify-content: space-around;
+}
+.join-button {
+  height: 56px !important;
+}
 </style>

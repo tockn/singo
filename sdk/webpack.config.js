@@ -3,11 +3,14 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const environment = process.env.NODE_ENV || 'dev';
 module.exports = {
   entry: {
-    bundle: './src/app.ts'
+    bundle: './src/index.ts'
   },
   output: {
     path: path.join(__dirname,'dist'),
-    filename: '[name].js'  // [name]はentryで記述した名前(この例ではbundle）が入る
+    filename: 'index.js',
+    library: 'singo-sdk',
+    libraryTarget: 'umd',
+    globalObject: 'typeof self !== \'undefined\' ? self : this'
   },
   resolve: {
     extensions:['.ts','.js'],
@@ -29,8 +32,11 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: './index.html'
-    })
-  ]
+    // new HtmlWebpackPlugin({
+    //   template: './index.html'
+    // })
+  ],
+  optimization: {
+    minimize: false,
+  }
 };

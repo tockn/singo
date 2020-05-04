@@ -6,5 +6,6 @@ module.exports = {
         poll: true
       }
     }
-  }
+  },
+  chainWebpack: config => config.resolve.symlinks(false)
 };

@@ -1,0 +1,1 @@
+export { SingoClient } from "./client";

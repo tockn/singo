@@ -1,5 +1,5 @@
 import userEnv from 'userEnv'
-export default class Client {
+export class SingoClient {
   private readonly endpoint: string;
   private ws: WebSocket;
   private pcs: Map<string, RTCPeerConnection> = new Map<string, RTCPeerConnection>();

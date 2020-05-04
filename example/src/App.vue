@@ -27,6 +27,6 @@ export default Vue.extend({
 </script>
 
 <style>
-  .app {
-  }
+.app {
+}
 </style>

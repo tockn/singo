@@ -1,14 +1,23 @@
 {
   "name": "singo-sdk",
-  "version": "1.0.0",
+  "version": "0.0.8",
   "repository": "https://github.com/tockn/singo",
   "author": "tockn",
   "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/src/index.d.ts",
+  "files": [
+    "dist/*.js",
+    "dist/src/*.ts"
+  ],
   "scripts": {
-    "build": "NODE_ENV=prod webpack --mode=production",
+    "build": "NODE_ENV=prod webpack --config webpack.config.js --mode=development",
     "start": "NODE_ENV=dev webpack-dev-server --mode=development"
   },
   "devDependencies": {
+    "eslint": "^6.7.2",
+    "@typescript-eslint/eslint-plugin": "^2.26.0",
+    "@typescript-eslint/parser": "^2.26.0",
     "@types/terser-webpack-plugin": "^2.2.0",
     "babel-jest": "^25.5.1",
     "html-webpack-plugin": "^4.2.1",
