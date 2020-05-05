@@ -1,24 +1,27 @@
 <template>
   <div class="home">
-    <media-query>
+    <media-query class="middle">
       <div class="join-field">
         <v-text-field
           v-model="roomName"
           class="room-name"
           placeholder="Room Name"
           outlined
+          @keydown.enter="join"
         />
         <v-btn class="join-button" @click="join">Join</v-btn>
       </div>
     </media-query>
+    <video-menu />
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
 import MediaQuery from "@/components/MediaQuery.vue";
+import VideoMenu from "@/components/VideoMenu.vue";
 @Component({
-  components: { MediaQuery }
+  components: { VideoMenu, MediaQuery }
 })
 export default class Home extends Vue {
   public roomName = "";
@@ -33,7 +36,7 @@ export default class Home extends Vue {
 </script>
 
 <style>
-.home {
+.middle {
   position: absolute;
   top: 0;
   right: 0;

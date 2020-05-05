@@ -1,14 +1,6 @@
 <template>
   <v-app class="app">
-    <v-app-bar app color="primary" dark>
-      <div class="d-flex align-center">
-        singo
-      </div>
-    </v-app-bar>
-
-    <v-content>
-      <router-view />
-    </v-content>
+    <router-view />
   </v-app>
 </template>
 

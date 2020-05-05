@@ -1,14 +1,22 @@
 <template>
   <div class="meeting">
     <div class="screens">
-      <video-screen ref="myScreen" :stream="myStream" screen-id="myscreen" />
+      <div class="screen">
+        <video-screen ref="myScreen" :stream="myStream" screen-id="myscreen" />
+      </div>
+      <div class="screen">
+        <video-screen ref="myScreen" :stream="myStream" screen-id="myscreen" />
+      </div>
+      <div class="screen">
+        <video-screen ref="myScreen" :stream="myStream" screen-id="myscreen" />
+      </div>
+      <div class="screen">
+        <video-screen ref="myScreen" :stream="myStream" screen-id="myscreen" />
+      </div>
 
-      <video-screen
-        v-for="(s, i) in partnerStreams"
-        :stream="s"
-        :screen-id="i"
-        :key="i"
-      />
+      <div class="screen" v-for="(s, i) in partnerStreams" :key="i">
+        <video-screen :stream="s" :screen-id="i" />
+      </div>
     </div>
   </div>
 </template>
@@ -27,32 +35,32 @@ export default class Room extends Vue {
   private partnerStreams: MediaStream[] = [];
 
   get roomId(): string {
-    return this.$route.params.id
+    return this.$route.params.id;
   }
 
   async mounted() {
     const sc = this.$refs.myScreen as HTMLVideoElement;
     this.client = new SingoClient(sc, {
-      SignalingServerEndpoint: 'ws://localhost:5000'
+      SignalingServerEndpoint: "ws://localhost:5000"
     });
     await this.client.joinRoom(this.roomId);
     this.myStream = this.client.stream;
 
-    this.client.onTrack = ((clientId, stream) => {
+    this.client.onTrack = (clientId, stream) => {
       this.partnerStreamMap.set(clientId, stream);
       this.updatePartnerStream();
-    });
+    };
 
-    this.client.onLeave = (clientId => {
+    this.client.onLeave = clientId => {
       this.partnerStreamMap.delete(clientId);
       this.updatePartnerStream();
-    });
+    };
   }
 
   private updatePartnerStream() {
     const ps = [] as MediaStream[];
-    this.partnerStreamMap.forEach((stream, _) => {
-      ps.push(stream)
+    this.partnerStreamMap.forEach(stream => {
+      ps.push(stream);
     });
     this.partnerStreams = ps;
   }
@@ -60,7 +68,15 @@ export default class Room extends Vue {
 </script>
 
 <style scoped>
+.meeting {
+}
 .screens {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+.screen {
+  font-size: 0;
 }
 </style>

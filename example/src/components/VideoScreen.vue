@@ -14,12 +14,12 @@ export default class VideoScreen extends Vue {
 
   mounted() {
     const el = this.$refs[this.refName] as HTMLVideoElement;
-    console.log(el)
+    console.log(el);
     el.srcObject = this.stream;
   }
 
   get refName(): string {
-    return `screen-${this.screenId}`
+    return `screen-${this.screenId}`;
   }
 
   @Watch("stream")
@@ -32,8 +32,13 @@ export default class VideoScreen extends Vue {
 
 <style scoped>
 video {
-  width: 400px;
-  height: 300px;
-  border: 1px solid black;
+  width: 50vw;
+  height: 50vh;
+}
+@media screen and (max-width: 480px) {
+  video {
+    width: 100vw;
+    height: 25vh;
+  }
 }
 </style>
