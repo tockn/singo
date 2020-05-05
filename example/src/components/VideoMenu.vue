@@ -74,22 +74,17 @@ export default class VideoMenu extends Vue {
   }
   private mouseMove(e: MouseEvent) {
     if (!this.dragging) return;
-    this.ref = this.$refs.buttons as Element;
-    this.refHeight = this.ref.clientHeight;
-    let top = e.clientY - this.openButtonRef.clientHeight / 2;
-    let left = e.clientX - this.openButtonRef.clientWidth / 2;
-    if (left > this.leftMax) left = this.leftMax;
-    if (left < this.leftMin) left = this.leftMin;
-    if (top > this.topMax) top = this.topMax;
-    if (top < this.topMin) top = this.topMin;
-    this.buttonsStyle = `top: ${top}px; left: ${left}px`;
+    this.updateButtonsPosition(e.clientX, e.clientY);
   }
   private touchMove(e: TouchEvent) {
     if (!this.dragging) return;
+    this.updateButtonsPosition(e.touches[0].clientX, e.touches[0].clientY);
+  }
+  private updateButtonsPosition(mouseX: number, mouseY: number) {
     this.ref = this.$refs.buttons as Element;
     this.refHeight = this.ref.clientHeight;
-    let top = e.touches[0].clientY - this.openButtonRef.clientHeight / 2;
-    let left = e.touches[0].clientX - this.openButtonRef.clientWidth / 2;
+    let top = mouseY - this.openButtonRef.clientHeight / 2;
+    let left = mouseX - this.openButtonRef.clientWidth / 2;
     if (left > this.leftMax) left = this.leftMax;
     if (left < this.leftMin) left = this.leftMin;
     if (top > this.topMax) top = this.topMax;
