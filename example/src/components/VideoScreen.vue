@@ -11,10 +11,15 @@ export default class VideoScreen extends Vue {
   public screenId: string;
   @Prop({ required: true })
   public stream: MediaStream;
+  @Prop({ required: true })
+  public muted: boolean;
+
+  private video: HTMLVideoElement;
 
   mounted() {
-    const el = this.$refs[this.refName] as HTMLVideoElement;
-    el.srcObject = this.stream;
+    this.video = this.$refs[this.refName] as HTMLVideoElement;
+    this.video.srcObject = this.stream;
+    this.video.muted = this.muted;
   }
 
   get refName(): string {
@@ -23,8 +28,12 @@ export default class VideoScreen extends Vue {
 
   @Watch("stream")
   onChangeStream() {
-    const el = this.$refs[this.refName] as HTMLVideoElement;
-    el.srcObject = this.stream;
+    this.video.srcObject = this.stream;
+  }
+
+  @Watch("muted")
+  onChangeMuted() {
+    this.video.muted = this.muted;
   }
 }
 </script>

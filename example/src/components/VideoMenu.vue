@@ -51,6 +51,10 @@ import { Vue, Component, Prop } from "vue-property-decorator";
 @Component
 export default class VideoMenu extends Vue {
   @Prop()
+  public muted: boolean;
+  @Prop()
+  public videoOn: boolean;
+  @Prop()
   onMuteStatusChanged: (muted: boolean) => Function;
   @Prop()
   onVideoStatusChanged: (status: boolean) => Function;
@@ -61,12 +65,9 @@ export default class VideoMenu extends Vue {
   private buttonsStyle = "";
   private ref: Element;
   private openButtonRef: Element;
-  private opened = false;
+  private opened = true;
   private refHeight = 0;
   private onMouseMoved = false;
-
-  private muted = false;
-  private videoOn = true;
 
   mounted() {
     document.ontouchmove = this.touchMove;
@@ -85,12 +86,10 @@ export default class VideoMenu extends Vue {
     this.opened = !this.opened;
   }
   muteButtonClicked() {
-    this.muted = !this.muted;
-    this.onMuteStatusChanged(this.muted);
+    this.onMuteStatusChanged(!this.muted);
   }
   videoButtonClicked() {
-    this.videoOn = !this.videoOn;
-    this.onVideoStatusChanged(this.videoOn);
+    this.onVideoStatusChanged(!this.videoOn);
   }
   leaveButtonClicked() {
     this.onLeaveClicked();

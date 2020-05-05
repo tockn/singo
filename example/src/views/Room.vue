@@ -1,22 +1,25 @@
 <template>
   <div class="room" ref="room">
-    <video-menu :on-leave-clicked="leave" />
+    <video-menu
+      :muted="muted"
+      :video-on="videoOn"
+      :on-mute-status-changed="muteChanged"
+      :on-video-status-changed="videoStatusChanged"
+      :on-leave-clicked="leave"
+    />
+
     <div class="screens">
       <div class="screen">
-        <video-screen ref="myScreen" :stream="myStream" screen-id="myscreen" />
-      </div>
-      <div class="screen">
-        <video-screen ref="myScreen" :stream="myStream" screen-id="myscreen" />
-      </div>
-      <div class="screen">
-        <video-screen ref="myScreen" :stream="myStream" screen-id="myscreen" />
-      </div>
-      <div class="screen">
-        <video-screen ref="myScreen" :stream="myStream" screen-id="myscreen" />
+        <video-screen
+          ref="myScreen"
+          :stream="myStream"
+          screen-id="myscreen"
+          :muted="true"
+        />
       </div>
 
       <div class="screen" v-for="(s, i) in partnerStreams" :key="i">
-        <video-screen :stream="s" :screen-id="i" />
+        <video-screen :stream="s" :screen-id="i" :muted="false" />
       </div>
     </div>
   </div>
@@ -37,6 +40,8 @@ export default class Room extends Vue {
   private partnerStreamMap: Map<string, MediaStream> = new Map();
   private partnerStreams: MediaStream[] = [];
   private ref: Element;
+  private muted = true;
+  private videoOn = true;
 
   get roomId(): string {
     return this.$route.params.id;
@@ -69,6 +74,16 @@ export default class Room extends Vue {
       ps.push(stream);
     });
     this.partnerStreams = ps;
+  }
+
+  private muteChanged(muted: boolean) {
+    this.muted = muted;
+    this.client.stream.getAudioTracks()[0].enabled = !this.muted;
+  }
+
+  private videoStatusChanged(status: boolean) {
+    this.videoOn = status;
+    this.client.stream.getVideoTracks()[0].enabled = status;
   }
 
   private leave() {
