@@ -40,6 +40,7 @@ export default class VideoMenu extends Vue {
   private openButtonRef: Element;
   private opened = false;
   private refHeight = 0;
+  private onMouseMoved = false;
 
   mounted() {
     document.ontouchmove = this.touchMove;
@@ -51,6 +52,10 @@ export default class VideoMenu extends Vue {
     this.openButtonRef = vel.$el;
   }
   openClicked() {
+    if (this.onMouseMoved) {
+      this.onMouseMoved = false;
+      return;
+    }
     this.opened = !this.opened;
   }
   private startDragging(e: TouchEvent | MouseEvent) {
@@ -74,6 +79,7 @@ export default class VideoMenu extends Vue {
   }
   private mouseMove(e: MouseEvent) {
     if (!this.dragging) return;
+    this.onMouseMoved = true;
     this.updateButtonsPosition(e.clientX, e.clientY);
   }
   private touchMove(e: TouchEvent) {
