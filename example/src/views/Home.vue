@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home" ref="home">
     <media-query class="middle">
       <div class="join-field">
         <v-text-field
@@ -20,11 +20,19 @@
 import { Vue, Component } from "vue-property-decorator";
 import MediaQuery from "@/components/MediaQuery.vue";
 import VideoMenu from "@/components/VideoMenu.vue";
+import { disableBodyScroll } from 'body-scroll-lock';
 @Component({
   components: { VideoMenu, MediaQuery }
 })
 export default class Home extends Vue {
   public roomName = "";
+  private ref: Element;
+
+  mounted () {
+    this.ref = this.$refs.home as Element;
+    disableBodyScroll(this.ref);
+  }
+
   public join() {
     if (this.roomName === "") {
       alert("error: Room Name is empty");
