@@ -1,4 +1,3 @@
-import userEnv from 'userEnv'
 export class SingoClient {
   private readonly endpoint: string;
   private ws: WebSocket;
@@ -13,7 +12,7 @@ export class SingoClient {
 
   constructor(myScreen: HTMLVideoElement, options?: ClientOptions) {
     this.myScreen = myScreen;
-    this.endpoint = options?.SignalingServerEndpoint || userEnv.wsUrl;
+    this.endpoint = options?.SignalingServerEndpoint || 'ws://localhost:5000';
   }
 
   private async getUserMedia() {
@@ -70,12 +69,7 @@ export class SingoClient {
   }
 
   public async joinRoom(roomID: string): Promise<void> {
-    try {
-      await this.getUserMedia();
-    } catch (e) {
-      alert('カメラの使用が許可されていないか、対応していないブラウザです')
-      return
-    }
+    await this.getUserMedia();
     return new Promise<void>(((resolve, reject) => {
       this.ws = new WebSocket(`${this.endpoint}/connect`);
       this.ws.onmessage = async (e: MessageEvent) => {
@@ -92,6 +86,14 @@ export class SingoClient {
         resolve();
       };
     }));
+  }
+
+  public changeAudioTrackEnabled(enabled: boolean) {
+    this.stream.getAudioTracks()[0].enabled = enabled;
+  }
+
+  public changeVideoTrackEnabled(enabled: boolean) {
+    this.stream.getVideoTracks()[0].enabled = enabled;
   }
 
   private async handleMessage(data: Message) {
