@@ -14,13 +14,15 @@
       <font-awesome-icon icon="bars" class="icon" />
     </v-btn>
     <div v-show="opened">
-      <v-btn class="mx-2 my-2" fab dark color="cyan">
-        <font-awesome-icon icon="microphone" class="icon" />
+      <v-btn class="mx-2 my-2" fab dark color="cyan" @click="muteButtonClicked">
+        <font-awesome-icon v-show="!muted" icon="microphone" class="icon" />
+        <font-awesome-icon v-show="muted" icon="microphone-slash" class="icon" />
       </v-btn>
-      <v-btn class="mx-2 my-2" fab dark color="cyan">
-        <font-awesome-icon icon="video" class="icon" />
+      <v-btn class="mx-2 my-2" fab dark color="cyan" @click="videoButtonClicked">
+        <font-awesome-icon v-show="videoOn" icon="video" class="icon" />
+        <font-awesome-icon v-show="!videoOn" icon="video-slash" class="icon" />
       </v-btn>
-      <v-btn class="mx-2 my-2" fab dark color="cyan">
+      <v-btn class="mx-2 my-2" fab dark color="cyan" @click="leaveButtonCliced">
         <font-awesome-icon icon="sign-out-alt" class="icon" />
       </v-btn>
     </div>
@@ -28,10 +30,17 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component } from "vue-property-decorator";
+import {Vue, Component, Prop} from "vue-property-decorator";
 
 @Component
 export default class VideoMenu extends Vue {
+  @Prop()
+  onMuteStatusChanged: (muted: boolean) => any;
+  @Prop()
+  onVideoStatusChanged: (status: boolean) => any;
+  @Prop()
+  onLeaveClicked: () => any;
+
   private dragging = false;
   private buttonsStyle = "";
   private ref: Element;
@@ -39,6 +48,9 @@ export default class VideoMenu extends Vue {
   private opened = false;
   private refHeight = 0;
   private onMouseMoved = false;
+
+  private muted = false;
+  private videoOn = true;
 
   mounted() {
     document.ontouchmove = this.touchMove;
@@ -56,6 +68,19 @@ export default class VideoMenu extends Vue {
     }
     this.opened = !this.opened;
   }
+  muteButtonClicked() {
+    this.muted = !this.muted;
+    this.onMuteStatusChanged(this.muted);
+  }
+  videoButtonClicked() {
+    this.videoOn = !this.videoOn;
+    this.onVideoStatusChanged(this.videoOn);
+  }
+  leaveButtonCliced() {
+    this.onLeaveClicked();
+  }
+
+
   private startDragging() {
     this.dragging = true;
   }
