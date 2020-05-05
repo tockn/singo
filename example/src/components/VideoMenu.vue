@@ -1,29 +1,27 @@
 <template>
-  <div
-    class="buttons"
-    ref="buttons"
-    :style="buttonsStyle"
-  >
+  <div class="buttons" ref="buttons" :style="buttonsStyle">
     <v-btn
       class="mx-2"
-      fab dark large
+      fab
+      dark
+      large
       color="cyan"
       ref="openButton"
       @mousedown="startDragging"
       @touchstart="startDragging"
       @click="openClicked"
     >
-      <font-awesome-icon icon="bars" class="icon"/>
+      <font-awesome-icon icon="bars" class="icon" />
     </v-btn>
     <div v-show="opened">
       <v-btn class="mx-2 my-2" fab dark color="cyan">
-        <font-awesome-icon icon="microphone" class="icon"/>
+        <font-awesome-icon icon="microphone" class="icon" />
       </v-btn>
       <v-btn class="mx-2 my-2" fab dark color="cyan">
-        <font-awesome-icon icon="video" class="icon"/>
+        <font-awesome-icon icon="video" class="icon" />
       </v-btn>
       <v-btn class="mx-2 my-2" fab dark color="cyan">
-        <font-awesome-icon icon="sign-out-alt" class="icon"/>
+        <font-awesome-icon icon="sign-out-alt" class="icon" />
       </v-btn>
     </div>
   </div>
@@ -58,7 +56,7 @@ export default class VideoMenu extends Vue {
     }
     this.opened = !this.opened;
   }
-  private startDragging(e: TouchEvent | MouseEvent) {
+  private startDragging() {
     this.dragging = true;
   }
   private endDragging() {
@@ -69,7 +67,9 @@ export default class VideoMenu extends Vue {
     return window.innerWidth - this.openButtonRef.clientWidth;
   }
   get topMax(): number {
-    return window.innerHeight - this.refHeight - this.openButtonRef.clientHeight / 2;
+    return (
+      window.innerHeight - this.refHeight - this.openButtonRef.clientHeight / 2
+    );
   }
   get leftMin(): number {
     return 0;
@@ -110,6 +110,6 @@ export default class VideoMenu extends Vue {
   justify-content: center;
 }
 .icon {
-    font-size: 24px;
-  }
+  font-size: 24px;
+}
 </style>

@@ -20,7 +20,7 @@
 import { Vue, Component } from "vue-property-decorator";
 import MediaQuery from "@/components/MediaQuery.vue";
 import VideoMenu from "@/components/VideoMenu.vue";
-import { disableBodyScroll } from 'body-scroll-lock';
+import { disableBodyScroll } from "body-scroll-lock";
 @Component({
   components: { VideoMenu, MediaQuery }
 })
@@ -28,7 +28,7 @@ export default class Home extends Vue {
   public roomName = "";
   private ref: Element;
 
-  mounted () {
+  mounted() {
     this.ref = this.$refs.home as Element;
     disableBodyScroll(this.ref);
   }

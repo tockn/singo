@@ -1,4 +1,4 @@
-import { library } from '@fortawesome/fontawesome-svg-core'
+import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faBars,
   faMicrophone,
@@ -6,8 +6,8 @@ import {
   faSignOutAlt,
   faVideo,
   faVideoSlash
-} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 library.add(
   faBars,
@@ -18,4 +18,4 @@ library.add(
   faSignOutAlt
 );
 
-export default FontAwesomeIcon
+export default FontAwesomeIcon;
