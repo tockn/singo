@@ -1,6 +1,8 @@
 package manager
 
 import (
+	"log"
+
 	"github.com/tockn/singo/model"
 	"github.com/tockn/singo/repository"
 )
@@ -32,6 +34,7 @@ func (rm *Room) JoinRoom(c *model.Client, roomID string) error {
 	if _, err := rm.roomRepo.Update(r); err != nil {
 		return err
 	}
+	log.Printf("joined! clientID:%s, roomID: %s\n", c.ID, roomID)
 	return rm.notifyNewClient(roomID, c)
 }
 

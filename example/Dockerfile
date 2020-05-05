@@ -12,5 +12,7 @@ COPY . .
 
 RUN npm run build
 
+RUN rm -rf /app/node_modules
+
 EXPOSE 8080
 CMD [ "http-server", "dist" ]

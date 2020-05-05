@@ -31,6 +31,7 @@ import { SingoClient } from "singo-sdk";
 import VideoScreen from "@/components/VideoScreen.vue";
 import VideoMenu from "@/components/VideoMenu.vue";
 import { disableBodyScroll } from "body-scroll-lock";
+const WS_URL = process.env.VUE_APP_WS_URL;
 @Component({
   components: { VideoMenu, VideoScreen }
 })
@@ -40,7 +41,7 @@ export default class Room extends Vue {
   private partnerStreamMap: Map<string, MediaStream> = new Map();
   private partnerStreams: MediaStream[] = [];
   private ref: Element;
-  private muted = true;
+  private muted = false;
   private videoOn = true;
 
   get roomId(): string {
@@ -52,7 +53,7 @@ export default class Room extends Vue {
     disableBodyScroll(this.ref);
     const sc = this.$refs.myScreen as HTMLVideoElement;
     this.client = new SingoClient(sc, {
-      SignalingServerEndpoint: "ws://localhost:5000"
+      SignalingServerEndpoint: WS_URL
     });
     await this.client.joinRoom(this.roomId);
     this.myStream = this.client.stream;

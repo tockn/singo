@@ -13,35 +13,47 @@
     >
       <font-awesome-icon icon="bars" class="icon" />
     </v-btn>
-    <div v-show="opened">
-      <v-btn class="mx-2 my-2" fab dark color="cyan" @click="muteButtonClicked">
-        <font-awesome-icon v-show="!muted" icon="microphone" class="icon" />
-        <font-awesome-icon
-          v-show="muted"
-          icon="microphone-slash"
-          class="icon"
-        />
-      </v-btn>
-      <v-btn
-        class="mx-2 my-2"
-        fab
-        dark
-        color="cyan"
-        @click="videoButtonClicked"
-      >
-        <font-awesome-icon v-show="videoOn" icon="video" class="icon" />
-        <font-awesome-icon v-show="!videoOn" icon="video-slash" class="icon" />
-      </v-btn>
-      <v-btn
-        class="mx-2 my-2"
-        fab
-        dark
-        color="cyan"
-        @click="leaveButtonClicked"
-      >
-        <font-awesome-icon icon="sign-out-alt" class="icon" />
-      </v-btn>
-    </div>
+    <transition name="top-left">
+      <div v-show="opened">
+        <v-btn
+          class="mx-2 my-2"
+          fab
+          dark
+          color="cyan"
+          @click="muteButtonClicked"
+        >
+          <font-awesome-icon v-show="!muted" icon="microphone" class="icon" />
+          <font-awesome-icon
+            v-show="muted"
+            icon="microphone-slash"
+            class="icon"
+          />
+        </v-btn>
+        <v-btn
+          class="mx-2 my-2"
+          fab
+          dark
+          color="cyan"
+          @click="videoButtonClicked"
+        >
+          <font-awesome-icon v-show="videoOn" icon="video" class="icon" />
+          <font-awesome-icon
+            v-show="!videoOn"
+            icon="video-slash"
+            class="icon"
+          />
+        </v-btn>
+        <v-btn
+          class="mx-2 my-2"
+          fab
+          dark
+          color="cyan"
+          @click="leaveButtonClicked"
+        >
+          <font-awesome-icon icon="sign-out-alt" class="icon" />
+        </v-btn>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -68,6 +80,8 @@ export default class VideoMenu extends Vue {
   private opened = true;
   private refHeight = 0;
   private onMouseMoved = false;
+  private viewPortWidth: number;
+  private viewPortHeight: number;
 
   mounted() {
     document.ontouchmove = this.touchMove;
@@ -77,6 +91,17 @@ export default class VideoMenu extends Vue {
     this.ref = this.$refs.buttons as Element;
     const vel = this.$refs.openButton as Vue;
     this.openButtonRef = vel.$el;
+    this.viewPortWidth = window.innerWidth;
+    this.viewPortHeight = window.innerHeight;
+    this.setDefaultPosition();
+    window.onorientationchange = () => {
+      this.viewPortWidth = window.innerHeight;
+      this.viewPortHeight = window.innerWidth;
+      this.setDefaultPosition();
+    };
+  }
+  setDefaultPosition() {
+    this.updateButtonsPosition(0, 99999);
   }
   openClicked() {
     if (this.onMouseMoved) {
@@ -102,12 +127,13 @@ export default class VideoMenu extends Vue {
     this.dragging = false;
   }
 
-  get leftMax(): number {
-    return window.innerWidth - this.openButtonRef.clientWidth;
+  // getにすると、this.viewPortWidthを書き換えても発火しないので関数にする
+  calculateLeftMax(): number {
+    return this.viewPortWidth - this.openButtonRef.clientWidth;
   }
-  get topMax(): number {
+  calculateTopMax(): number {
     return (
-      window.innerHeight - this.refHeight - this.openButtonRef.clientHeight / 2
+      this.viewPortHeight - this.refHeight - this.openButtonRef.clientHeight / 2
     );
   }
   get leftMin(): number {
@@ -130,9 +156,9 @@ export default class VideoMenu extends Vue {
     this.refHeight = this.ref.clientHeight;
     let top = mouseY - this.openButtonRef.clientHeight / 2;
     let left = mouseX - this.openButtonRef.clientWidth / 2;
-    if (left > this.leftMax) left = this.leftMax;
+    if (left > this.calculateLeftMax()) left = this.calculateLeftMax();
     if (left < this.leftMin) left = this.leftMin;
-    if (top > this.topMax) top = this.topMax;
+    if (top > this.calculateTopMax()) top = this.calculateTopMax();
     if (top < this.topMin) top = this.topMin;
     this.buttonsStyle = `top: ${top}px; left: ${left}px`;
   }
@@ -151,5 +177,18 @@ export default class VideoMenu extends Vue {
 }
 .icon {
   font-size: 24px;
+}
+.top-left-enter-active,
+.top-left-leave-active {
+  transform: translate(0px, 0px);
+  will-change: opacity;
+  transition: transform 225ms cubic-bezier(0, 0, 0.2, 1) 0ms,
+    opacity 225ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+
+.top-left-enter,
+.top-left-leave-to {
+  opacity: 0;
+  transform: translateY(0) translateX(-30%);
 }
 </style>
