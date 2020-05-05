@@ -1,8 +1,6 @@
 <template>
   <div class="room" ref="room">
-    <video-menu
-      :on-leave-clicked="leave"
-    />
+    <video-menu :on-leave-clicked="leave" />
     <div class="screens">
       <div class="screen">
         <video-screen ref="myScreen" :stream="myStream" screen-id="myscreen" />
@@ -31,7 +29,7 @@ import VideoScreen from "@/components/VideoScreen.vue";
 import VideoMenu from "@/components/VideoMenu.vue";
 import { disableBodyScroll } from "body-scroll-lock";
 @Component({
-  components: {VideoMenu, VideoScreen }
+  components: { VideoMenu, VideoScreen }
 })
 export default class Room extends Vue {
   private client: SingoClient;
@@ -74,8 +72,8 @@ export default class Room extends Vue {
   }
 
   private leave() {
-    if (!confirm('本当に退出しますか？')) return;
-    this.$router.push('/')
+    if (!confirm("本当に退出しますか？")) return;
+    this.$router.push("/");
   }
 }
 </script>

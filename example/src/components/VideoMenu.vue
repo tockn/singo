@@ -16,13 +16,29 @@
     <div v-show="opened">
       <v-btn class="mx-2 my-2" fab dark color="cyan" @click="muteButtonClicked">
         <font-awesome-icon v-show="!muted" icon="microphone" class="icon" />
-        <font-awesome-icon v-show="muted" icon="microphone-slash" class="icon" />
+        <font-awesome-icon
+          v-show="muted"
+          icon="microphone-slash"
+          class="icon"
+        />
       </v-btn>
-      <v-btn class="mx-2 my-2" fab dark color="cyan" @click="videoButtonClicked">
+      <v-btn
+        class="mx-2 my-2"
+        fab
+        dark
+        color="cyan"
+        @click="videoButtonClicked"
+      >
         <font-awesome-icon v-show="videoOn" icon="video" class="icon" />
         <font-awesome-icon v-show="!videoOn" icon="video-slash" class="icon" />
       </v-btn>
-      <v-btn class="mx-2 my-2" fab dark color="cyan" @click="leaveButtonClicked">
+      <v-btn
+        class="mx-2 my-2"
+        fab
+        dark
+        color="cyan"
+        @click="leaveButtonClicked"
+      >
         <font-awesome-icon icon="sign-out-alt" class="icon" />
       </v-btn>
     </div>
@@ -30,16 +46,16 @@
 </template>
 
 <script lang="ts">
-import {Vue, Component, Prop} from "vue-property-decorator";
+import { Vue, Component, Prop } from "vue-property-decorator";
 
 @Component
 export default class VideoMenu extends Vue {
   @Prop()
-  onMuteStatusChanged: ((muted: boolean) => any);
+  onMuteStatusChanged: (muted: boolean) => Function;
   @Prop()
-  onVideoStatusChanged: ((status: boolean) => any);
+  onVideoStatusChanged: (status: boolean) => Function;
   @Prop()
-  onLeaveClicked: (() => any);
+  onLeaveClicked: () => Function;
 
   private dragging = false;
   private buttonsStyle = "";
@@ -79,7 +95,6 @@ export default class VideoMenu extends Vue {
   leaveButtonClicked() {
     this.onLeaveClicked();
   }
-
 
   private startDragging() {
     this.dragging = true;
