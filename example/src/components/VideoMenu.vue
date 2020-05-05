@@ -22,7 +22,7 @@
         <font-awesome-icon v-show="videoOn" icon="video" class="icon" />
         <font-awesome-icon v-show="!videoOn" icon="video-slash" class="icon" />
       </v-btn>
-      <v-btn class="mx-2 my-2" fab dark color="cyan" @click="leaveButtonCliced">
+      <v-btn class="mx-2 my-2" fab dark color="cyan" @click="leaveButtonClicked">
         <font-awesome-icon icon="sign-out-alt" class="icon" />
       </v-btn>
     </div>
@@ -35,11 +35,11 @@ import {Vue, Component, Prop} from "vue-property-decorator";
 @Component
 export default class VideoMenu extends Vue {
   @Prop()
-  onMuteStatusChanged: (muted: boolean) => any;
+  onMuteStatusChanged: ((muted: boolean) => any);
   @Prop()
-  onVideoStatusChanged: (status: boolean) => any;
+  onVideoStatusChanged: ((status: boolean) => any);
   @Prop()
-  onLeaveClicked: () => any;
+  onLeaveClicked: (() => any);
 
   private dragging = false;
   private buttonsStyle = "";
@@ -76,7 +76,7 @@ export default class VideoMenu extends Vue {
     this.videoOn = !this.videoOn;
     this.onVideoStatusChanged(this.videoOn);
   }
-  leaveButtonCliced() {
+  leaveButtonClicked() {
     this.onLeaveClicked();
   }
 
@@ -133,6 +133,7 @@ export default class VideoMenu extends Vue {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  z-index: 123456;
 }
 .icon {
   font-size: 24px;

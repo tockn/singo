@@ -14,7 +14,6 @@ export default class VideoScreen extends Vue {
 
   mounted() {
     const el = this.$refs[this.refName] as HTMLVideoElement;
-    console.log(el);
     el.srcObject = this.stream;
   }
 
