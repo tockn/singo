@@ -23,12 +23,12 @@ func serve(addr string) error {
 	return http.ListenAndServe(addr, nil)
 }
 
-func serveWithExample(addr string) error {
+func serveWithDemo(addr string) error {
 	roomRepo := mem.NewRoomRepository()
 	man := manager.NewManager(roomRepo)
 	han := handler.NewHandler(man)
 
-	fs := http.FileServer(http.Dir("./example/dist"))
+	fs := http.FileServer(http.Dir("./demo/dist"))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		log.Println(r.URL.Path)
 		if r.URL.Path == "/connect" {
@@ -40,9 +40,9 @@ func serveWithExample(addr string) error {
 			fs.ServeHTTP(w, r)
 			return
 		}
-		http.ServeFile(w, r, "./example/dist/index.html")
+		http.ServeFile(w, r, "./demo/dist/index.html")
 	})
 
-	log.Println("running...(with example)")
+	log.Println("running...(with demo)")
 	return http.ListenAndServe(addr, nil)
 }

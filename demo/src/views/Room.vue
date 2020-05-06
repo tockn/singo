@@ -32,6 +32,9 @@ import VideoScreen from "@/components/VideoScreen.vue";
 import VideoMenu from "@/components/VideoMenu.vue";
 import { disableBodyScroll } from "body-scroll-lock";
 const WS_URL = process.env.VUE_APP_WS_URL;
+
+Component.registerHooks(["beforeRouteEnter", "beforeRouteLeave"]);
+
 @Component({
   components: { VideoMenu, VideoScreen }
 })
@@ -51,9 +54,23 @@ export default class Room extends Vue {
   async mounted() {
     this.ref = this.$refs.room as Element;
     disableBodyScroll(this.ref);
+  }
+
+  public beforeRouteEnter(to: any, from: any, next: any) {
+    next(async (component: any) => {
+      await component.joinRoom();
+    });
+  }
+
+  beforeRouteLeave(to: any, from: any, next: any) {
+    this.client?.close();
+    next();
+  }
+
+  async joinRoom() {
     const sc = this.$refs.myScreen as HTMLVideoElement;
     this.client = new SingoClient(sc, {
-      SignalingServerEndpoint: WS_URL
+      signalingServerEndpoint: WS_URL
     });
     await this.client.joinRoom(this.roomId);
     this.myStream = this.client.stream;
@@ -89,6 +106,7 @@ export default class Room extends Vue {
 
   private leave() {
     if (!confirm("本当に退出しますか？")) return;
+    this.client.close();
     this.$router.push("/");
   }
 }

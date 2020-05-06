@@ -12,7 +12,7 @@ export class SingoClient {
 
   constructor(myScreen: HTMLVideoElement, options?: ClientOptions) {
     this.myScreen = myScreen;
-    this.endpoint = options?.SignalingServerEndpoint || 'ws://localhost:5000';
+    this.endpoint = options?.signalingServerEndpoint || 'ws://localhost:5000';
   }
 
   private async getUserMedia() {
@@ -66,6 +66,19 @@ export class SingoClient {
     }
 
     return pc;
+  }
+
+  public close() {
+    this.stream.getVideoTracks().forEach(t => {
+      t.stop();
+    });
+    this.stream.getAudioTracks().forEach(t => {
+      t.stop();
+    });
+    this.pcs?.forEach((c) => {
+      c.close();
+    });
+    this.ws?.close();
   }
 
   public async joinRoom(roomID: string): Promise<void> {
@@ -200,7 +213,7 @@ export class SingoClient {
 }
 
 interface ClientOptions {
-  SignalingServerEndpoint: string
+  signalingServerEndpoint: string
 }
 
 enum MessageType {

@@ -13,16 +13,16 @@ func main() {
 
 func run() error {
 	var (
-		withExample = flag.Bool("example", false, "serve with video chat system example")
-		addrFlag    = flag.String("addr", "0.0.0.0", "addr")
-		portFlag    = flag.Int("port", 5000, "port")
+		withDemo = flag.Bool("demo", false, "serve with video chat system demo")
+		addrFlag = flag.String("addr", "0.0.0.0", "addr")
+		portFlag = flag.Int("port", 5000, "port")
 	)
 	flag.Parse()
 
 	addr := fmt.Sprintf("%s:%d", *addrFlag, *portFlag)
 
-	if *withExample {
-		return serveWithExample(addr)
+	if *withDemo {
+		return serveWithDemo(addr)
 	}
 
 	return serve(addr)

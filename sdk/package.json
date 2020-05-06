@@ -1,14 +1,14 @@
 {
   "name": "singo-sdk",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "repository": "https://github.com/tockn/singo",
   "author": "tockn",
   "license": "MIT",
   "main": "dist/index.js",
-  "types": "dist/src/index.d.ts",
+  "types": "dist/index.d.ts",
   "files": [
     "dist/*.js",
-    "dist/src/*.ts"
+    "dist/*.ts"
   ],
   "scripts": {
     "build": "NODE_ENV=prod webpack --config webpack.config.js --mode=development",
