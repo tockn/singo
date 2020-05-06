@@ -1,5 +1,6 @@
 export class SingoClient {
   private readonly endpoint: string;
+  private readonly mediaStreamConstrains: MediaStreamConstraints;
   private ws: WebSocket;
   private pcs: Map<string, RTCPeerConnection> = new Map<string, RTCPeerConnection>();
   private connected = false;
@@ -10,42 +11,24 @@ export class SingoClient {
   public onTrack: ((clientId: string, stream: MediaStream) => any);
   public onLeave: ((clientId: string) => any);
 
-  constructor(myScreen: HTMLVideoElement, options?: ClientOptions) {
+  constructor(myScreen: HTMLVideoElement, options?: SingoClientOptions) {
     this.myScreen = myScreen;
     this.endpoint = options?.signalingServerEndpoint || 'ws://localhost:5000';
+    this.mediaStreamConstrains = options?.mediaStreamConstrains || DefaultMediaStreamConstrains;
   }
 
   private async getUserMedia() {
     if (!this.stream) {
-      const stream = await navigator.mediaDevices.getUserMedia(
-        {
-          'audio': true,
-          'video': {
-            'width': {
-              'max': 640
-            },
-            'height': {
-              'max': 480
-            },
-            'frameRate': {
-              'max': 20
-            }
-          }
-        }
-      );
+      const stream = await navigator.mediaDevices.getUserMedia(this.mediaStreamConstrains);
       this.stream = stream;
       this.myScreen.srcObject = stream;
       this.myScreen.volume = 0;
     }
   }
 
-  public async createNewPeer(clientId: string): Promise<RTCPeerConnection> {
+  public async createNewPeer(clientId: string, configuration?: RTCConfiguration): Promise<RTCPeerConnection> {
     const pc = new RTCPeerConnection(
-      {'iceServers':[
-        {'urls': 'stun:stun.l.google.com:19302'},
-        {'urls': 'stun:stun1.l.google.com:19302'},
-        {'urls': 'stun:stun2.l.google.com:19302'}
-      ]}
+      configuration || DefaultRTCConfiguration
     );
     this.pcs.set(clientId, pc);
 
@@ -212,17 +195,40 @@ export class SingoClient {
   }
 }
 
-interface ClientOptions {
+export interface SingoClientOptions {
   signalingServerEndpoint: string
+  mediaStreamConstrains: MediaStreamConstraints
 }
+
+const DefaultMediaStreamConstrains = {
+  'audio': true,
+  'video': {
+    'width': {
+      'max': 640
+    },
+    'height': {
+      'max': 480
+    },
+    'frameRate': {
+      'max': 20
+    }
+  }
+};
+
+const DefaultRTCConfiguration = {
+  'iceServers':[
+    {'urls': 'stun:stun.l.google.com:19302'},
+    {'urls': 'stun:stun1.l.google.com:19302'},
+    {'urls': 'stun:stun2.l.google.com:19302'}
+  ]};
 
 enum MessageType {
   NotifyClientId = 'notify-client-id',
-    NewClient = 'new-client',
-    LeaveClient = 'leave-client',
-    Error = 'error',
-    Offer = 'offer',
-    Answer = 'answer'
+  NewClient = 'new-client',
+  LeaveClient = 'leave-client',
+  Error = 'error',
+  Offer = 'offer',
+  Answer = 'answer'
 }
 
 interface Message {

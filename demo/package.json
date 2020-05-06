@@ -13,7 +13,7 @@
     "@fortawesome/vue-fontawesome": "^0.1.9",
     "body-scroll-lock": "^3.0.2",
     "core-js": "^3.6.4",
-    "singo-sdk": "0.1.0",
+    "singo-sdk": "0.1.2",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^8.4.2",

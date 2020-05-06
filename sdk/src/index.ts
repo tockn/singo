@@ -1,1 +1,1 @@
-export { SingoClient } from "./client";
+export { SingoClient, SingoClientOptions } from "./client";

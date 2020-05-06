@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import { Vue, Component } from "vue-property-decorator";
-import { SingoClient } from "singo-sdk";
+import { SingoClient, SingoClientOptions } from "singo-sdk";
 import VideoScreen from "@/components/VideoScreen.vue";
 import VideoMenu from "@/components/VideoMenu.vue";
 import { disableBodyScroll } from "body-scroll-lock";
@@ -71,7 +71,7 @@ export default class Room extends Vue {
     const sc = this.$refs.myScreen as HTMLVideoElement;
     this.client = new SingoClient(sc, {
       signalingServerEndpoint: WS_URL
-    });
+    } as SingoClientOptions);
     await this.client.joinRoom(this.roomId);
     this.myStream = this.client.stream;
 
