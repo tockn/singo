@@ -40,7 +40,7 @@ $ make run
 #### Dockerを使う場合
 
 ```
-$ make docker-run-example
+$ make docker-run-demo
 ```
 
 ### ローカルでビルドして使う場合
@@ -49,7 +49,7 @@ $ make docker-run-example
 $ go version
 > go version go1.14 darwin/amd64
 
-$ make run-example
+$ make run-demo
 ```
 
 `http://localhost:5000` にアクセスするとビデオ会議システムが使えます。

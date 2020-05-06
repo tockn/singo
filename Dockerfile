@@ -10,11 +10,11 @@ COPY manager /app/manager
 COPY go.mod /app
 COPY go.sum /app
 
-WORKDIR /app/example/dist
-COPY example/dist /app/example/dist
+WORKDIR /app/demo/dist
+COPY demo/dist /app/demo/dist
 
 WORKDIR /app
 RUN ls
 RUN go build -o singo
 ENTRYPOINT ["./singo"]
-CMD ["-example=false"]
+CMD ["-demo=false"]

@@ -1,4 +1,4 @@
-.PHONY: sdk-build docker-clean docker-run docker-run-example docker-build docker-push all up sdk-dev
+.PHONY: sdk-build docker-clean docker-run docker-run-demo docker-build docker-push all up sdk-dev
 
 docker-clean:
 	-docker rm singo
@@ -6,8 +6,8 @@ docker-clean:
 docker-run: docker-clean
 	docker run -p 5000:5000 --name singo tockn/singo:latest
 
-docker-run-example: docker-clean
-	docker run -p 5000:5000 --name singo tockn/singo:latest --example
+docker-run-demo: docker-clean
+	docker run -p 5000:5000 --name singo tockn/singo:latest --demo
 
 docker-build:
 	docker build -t tockn/singo .
@@ -15,10 +15,13 @@ docker-build:
 docker-push:
 	docker push tockn/singo
 
-all: sdk-build docker-build docker-push
+all: demo-build docker-build docker-push
 
 up:
 	docker-compose up --build
+
+demo-build:
+	cd demo;npm run build
 
 build:
 	go build -o singo
@@ -32,5 +35,5 @@ sdk-dev:
 run: build
 	./singo
 
-run-example: build sdk-build
-	./singo -example
+run-demo: demo-build build
+	./singo -demo

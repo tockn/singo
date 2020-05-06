@@ -16,7 +16,12 @@ singo -> ClientA: new-client message
 singo -> ClientB: new-client message
 ClientA -> singo: SDP offer
 singo -> ClientC: SDP offer
-ClientB -> singo: ...
+ClientB -> singo: SDP offer
+singo -> ClientC: SDP offer
+ClientC -> singo: SDP answer
+singo -> ClientA: SDP answer
+ClientC -> singo: SDP answer
+singo -> ClientB: SDP answer
 
 ClientA -> singo: Leave room "hoge"
 singo -> ClientB: leave-client message
