@@ -1,0 +1,25 @@
+@startuml
+title singo
+
+ClientA -> singo: Join room "hoge"
+singo -> ClientA: notify client id
+ClientB -> singo: Join room "hoge"
+singo -> ClientB: notify client id
+singo -> ClientA: new-client message
+ClientA -> singo: SDP offer
+singo -> ClientB: SDP offer
+ClientB -> singo: SDP answer
+singo -> ClientA: SDP answer
+ClientC -> singo: Join room "hoge"
+singo -> ClientC: notify client id
+singo -> ClientA: new-client message
+singo -> ClientB: new-client message
+ClientA -> singo: SDP offer
+singo -> ClientC: SDP offer
+ClientB -> singo: ...
+
+ClientA -> singo: Leave room "hoge"
+singo -> ClientB: leave-client message
+singo -> ClientC: leave-client message
+
+@enduml
