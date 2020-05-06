@@ -24,10 +24,10 @@ const client = new SingoClient(myScreen, {
 
 // joinRoomメソッドで特定の名前のroomへ入ります。
 // ここではvideoタグを追加して表示しています
-await c.joinRoom('room name')
+await client.joinRoom('room name')
 
 // onTrackは新たなclientのstreamを受け取ったときに呼ばれます
-c.onTrack = ((clientId, stream) => {
+client.onTrack = ((clientId, stream) => {
   const elId = `#partner-${clientId}`;
   const pre = document.getElementById(elId);
   pre?.parentNode.removeChild(pre);
@@ -44,9 +44,12 @@ c.onTrack = ((clientId, stream) => {
 
 // onLeaveはclientが退出したときに呼ばれます。
 // ここでは退出したclientのvideoタグを削除しています。
-c.onLeave = ((clientId) => {
+client.onLeave = ((clientId) => {
   const elId = `#partner-${clientId}`;
   const pre = document.getElementById(elId);
   pre?.parentNode.removeChild(pre);
 });
+
+// close
+client.close()
 ```

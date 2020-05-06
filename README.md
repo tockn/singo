@@ -2,12 +2,17 @@
 
 ![icon](https://user-images.githubusercontent.com/29294540/81082118-cdf66a00-8f2d-11ea-97a8-eb31e6c2fe8c.jpg)
 
+The Gopher character is based on the Go mascot designed by[Renée French.](http://reneefrench.blogspot.com/)
+
+（[issue#1](https://github.com/tockn/singo/issues/1)）
+
 ## singoとは
 
 singoはフルメッシュP2Pによる複数人通信が可能なWebRTCシグナリングサーバです。  
 JavaScript (TypeScript)によるSDKを提供しています。また、サンプルとして簡単なビデオ通話システムも用意しています。
 
 ![image](https://user-images.githubusercontent.com/29294540/81088076-752acf80-8f35-11ea-8f82-b320352e3a21.png)
+
 
 ## 使い方
 
@@ -28,6 +33,8 @@ $ go version
 $ make run
 ```
 
+デフォルトでは `ws://localhost:5000/connect` でコネクションを張れます。
+
 ### シグナリングサーバとサンプルのビデオ通話システムを立ち上げる
 
 #### Dockerを使う場合
@@ -44,6 +51,8 @@ $ go version
 
 $ make run-example
 ```
+
+`http://localhost:5000` にアクセスするとビデオ会議システムが使えます。
 
 ## 処理の流れ
 
@@ -78,3 +87,7 @@ $ make run-example
   - roomに新たにjoinしてきたclient情報を通知します
 - leave-client
   - roomから退出したclient情報を通知します
+
+## LICENCE
+
+MIT

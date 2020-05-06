@@ -1,8 +1,5 @@
 .PHONY: sdk-build docker-clean docker-run docker-run-example docker-build docker-push all up sdk-dev
 
-sdk-build:
-	cd sdk;yarn build
-
 docker-clean:
 	-docker rm singo
 
@@ -23,14 +20,17 @@ all: sdk-build docker-build docker-push
 up:
 	docker-compose up --build
 
-sdk-dev:
-	cd sdk; yarn start
-
 build:
 	go build -o singo
+
+sdk-build:
+	cd sdk;yarn build
+
+sdk-dev:
+	cd sdk; yarn start
 
 run: build
 	./singo
 
-run-example: build
+run-example: build sdk-build
 	./singo -example
