@@ -24,7 +24,7 @@ func (h *Handler) HandleReceiveMessage(c *model.Client, conn *websocket.Conn) {
 			continue
 		}
 
-		var resp *SendMessage
+		var resp *model.Message
 		switch req.Type {
 		case ReceiveMessageTypeJoinRoom:
 			resp = h.handleJoinRoom(c, req.Payload)
@@ -55,7 +55,7 @@ type MessageJoinRoom struct {
 	RoomID string `json:"room_id"`
 }
 
-func (h *Handler) handleJoinRoom(c *model.Client, msg []byte) *SendMessage {
+func (h *Handler) handleJoinRoom(c *model.Client, msg []byte) *model.Message {
 	var req MessageJoinRoom
 	if err := json.Unmarshal(msg, &req); err != nil {
 		return newErrorMessage(ErrMsgInvalidPayload)
@@ -72,7 +72,7 @@ type MessageSDPOffer struct {
 }
 
 // SDP offerが来た時に呼ばれる。Room IDの
-func (h *Handler) handleSDPOffer(c *model.Client, msg []byte) *SendMessage {
+func (h *Handler) handleSDPOffer(c *model.Client, msg []byte) *model.Message {
 	var req MessageSDPOffer
 	if err := json.Unmarshal(msg, &req); err != nil {
 		return newErrorMessage(ErrMsgInvalidPayload)
@@ -88,7 +88,7 @@ type MessageSDPAnswer struct {
 	ClientID string     `json:"client_id"`
 }
 
-func (h *Handler) handleSDPAnswer(c *model.Client, msg []byte) *SendMessage {
+func (h *Handler) handleSDPAnswer(c *model.Client, msg []byte) *model.Message {
 	var req MessageSDPAnswer
 	if err := json.Unmarshal(msg, &req); err != nil {
 		return newErrorMessage(ErrMsgInvalidPayload)

@@ -11,6 +11,7 @@ var (
 	MessageTypeICECandidate   MessageType = "ice-candidate"
 	MessageTypeNewClient      MessageType = "new-client"
 	MessageTypeLeaveClient    MessageType = "leave-client"
+	MessageTypeError          MessageType = "error"
 )
 
 type Message struct {
