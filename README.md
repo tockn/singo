@@ -54,6 +54,10 @@ $ make run-example
 
 `http://localhost:5000` にアクセスするとビデオ会議システムが使えます。
 
+### SDK
+
+[JavaScript SDK](https://github.com/tockn/singo/blob/master/sdk/README.md)
+
 ## 処理の流れ
 
 ### シーケンス図
