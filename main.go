@@ -1,13 +1,8 @@
 package main
 
 import (
-	"log"
-	"net/http"
-	"strings"
-
-	"github.com/tockn/singo/handler"
-	"github.com/tockn/singo/manager"
-	"github.com/tockn/singo/repository/mem"
+	"flag"
+	"fmt"
 )
 
 func main() {
@@ -17,25 +12,18 @@ func main() {
 }
 
 func run() error {
-	roomRepo := mem.NewRoomRepository()
-	man := manager.NewManager(roomRepo)
-	han := handler.NewHandler(man)
+	var (
+		withExample = flag.Bool("example", false, "serve with video chat system example")
+		addrFlag    = flag.String("addr", "0.0.0.0", "addr")
+		portFlag    = flag.Int("port", 5000, "port")
+	)
+	flag.Parse()
 
-	fs := http.FileServer(http.Dir("./example/dist"))
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.URL.Path)
-		if r.URL.Path == "/connect" {
-			han.CreateConnection(w, r)
-			return
-		}
-		sp := strings.Split(r.URL.Path, "/")
-		if len(sp) > 2 && (sp[1] == "js" || sp[1] == "css") {
-			fs.ServeHTTP(w, r)
-			return
-		}
-		http.ServeFile(w, r, "./example/dist/index.html")
-	})
+	addr := fmt.Sprintf("%s:%d", *addrFlag, *portFlag)
 
-	log.Println("running...")
-	return http.ListenAndServe("0.0.0.0:5000", nil)
+	if *withExample {
+		return serveWithExample(addr)
+	}
+
+	return serve(addr)
 }
