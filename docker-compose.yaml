@@ -7,17 +7,11 @@ services:
       - 443:443
     restart: always
     environment:
-      DOMAINS: 'singo.local -> http://web:8080'
+      DOMAINS: 'singo.local -> http://singo:5000'
       STAGE: local
     volumes:
       - ./:/var/lib/https-portal
-  web:
-    image: tockn/singo-example:latest
-    ports:
-      - 8080:8080
-    depends_on:
-      - signaling
-  signaling:
+  singo:
     image: tockn/singo:latest
     ports:
       - 5000:5000
